@@ -149,15 +149,37 @@ Finally, you can now start the Pesto UI!
 * Start the web app:
 
 ```bash
+export PESTO_API_PORT="3000"
+export PESTO_API_HOST="api.pesto.io"
+export PESTO_API_HTTP_SCHEME="http"
 pnpm i && pnpm dev
 ```
 
 * Start the tauri app:
 
 ```bash
-cd vite-tauri/
+export PESTO_API_PORT="3000"
+export PESTO_API_HOST="api.pesto.io"
+export PESTO_API_HTTP_SCHEME="http"
+
 pnpm i && pnpm tauri dev
 
-
-cd vite-tauri/ && pnpm tauri dev
+# ---
+# or : 
+# - 
+# cd src-tauri/ && pnpm tauri dev
 ```
+
+
+
+## ANNEX: Issues References
+
+### Vite and `Reference Error: process is not defined`
+
+* grateful thanks to <https://dev.to/boostup/uncaught-referenceerror-process-is-not-defined-12kg>
+* Official reference in `vite` docs : <https://vitejs.dev/guide/env-and-mode>
+* <https://github.com/vitejs/vite/issues/9539>
+
+Solution:
+
+* Add `loadEnv` to the `vite.config.ts` dependencies.
