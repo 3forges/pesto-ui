@@ -152,7 +152,7 @@ Finally, you can now start the Pesto UI!
 export PESTO_API_PORT="3000"
 export PESTO_API_HOST="api.pesto.io"
 export PESTO_API_HTTP_SCHEME="http"
-pnpm i && pnpm dev
+pnpm i && pnpm dev:web
 ```
 
 * Start the tauri app:
