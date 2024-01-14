@@ -146,16 +146,7 @@ To start the Pesto API, refer to [the Pesto API repository](https://github.com/3
 
 Finally, you can now start the Pesto UI!
 
-* Start the web app:
-
-```bash
-export PESTO_API_PORT="3000"
-export PESTO_API_HOST="api.pesto.io"
-export PESTO_API_HTTP_SCHEME="http"
-pnpm i && pnpm dev:web
-```
-
-* Start the tauri app:
+* Start the tauri app, and the webapp, at the same time:
 
 ```bash
 export PESTO_API_PORT="3000"
@@ -170,16 +161,61 @@ pnpm i && pnpm tauri dev
 # cd src-tauri/ && pnpm tauri dev
 ```
 
+* Start the web app, without the tauri app:
 
+```bash
+export PESTO_API_PORT="3000"
+export PESTO_API_HOST="api.pesto.io"
+export PESTO_API_HTTP_SCHEME="http"
+pnpm i && pnpm dev:web
+```
 
 ## ANNEX: Issues References
 
 ### Vite and `Reference Error: process is not defined`
 
-* grateful thanks to <https://dev.to/boostup/uncaught-referenceerror-process-is-not-defined-12kg>
+* Grateful thanks to <https://dev.to/boostup/uncaught-referenceerror-process-is-not-defined-12kg>
 * Official reference in `vite` docs : <https://vitejs.dev/guide/env-and-mode>
 * <https://github.com/vitejs/vite/issues/9539>
 
 Solution:
 
 * Add `loadEnv` to the `vite.config.ts` dependencies.
+* Change the `vite.config.ts` to :
+
+```TypeScript
+import { defineConfig, loadEnv } from 'vite'
+import preact from '@preact/preset-vite'
+
+export default defineConfig(({ mode }) => {
+  // const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, process.cwd(), '');
+  return {
+    define: {
+      'process.env.PESTO_API_PORT': JSON.stringify(env.PESTO_API_PORT),
+      'process.env.PESTO_API_HOST': JSON.stringify(env.PESTO_API_HOST),
+      'process.env.PESTO_API_HTTP_SCHEME': JSON.stringify(env.PESTO_API_HTTP_SCHEME)
+    },
+    server: { // config to use an IP that can be reachable by my private plausible analytics service
+      // host: `testwebsite.pokus.io`,
+      host: `ui.pesto.io`,
+      // port: 5174,
+      // host: `0.0.0.0`,
+      // origin: `testwebsite.pokus.io`,
+      cors: {
+        // origin: `testwebsite.pokus.io, github.com`
+        origin: `ui.pesto.io, github.com`
+      },
+    },
+    plugins: [preact()],
+  }
+})
+```
+
+* And with that, I can use 3 new environment variables that `vite` is gonna pick at run time:
+
+```bash
+export PESTO_API_PORT=""
+export PESTO_API_HOST=""
+export PESTO_API_HTTP_SCHEME=""
+```
