@@ -2,14 +2,15 @@ import { useState } from "preact/hooks"
 
 import {
   PestoProjectApiEntity,
-} from "../features/PestoApi/Projects/pestoProjectSlice"
+} from "../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
 import { Dropdown, Spinner, TextInput, Alert, Toast } from "flowbite-react"
 // import { HiCheck, HiExclamation, HiX } from 'react-icons/hi';
 /// import { HiCheck, HiExclamation, HiX } from 'flowbite-react';
 // import { Highlighter, HandIcon, EyeOffIcon, EyeIcon, HopIcon, BellIcon } from 'lucide-preact'
 import { BellIcon } from 'lucide-preact'
 
-import { pestoApi } from "../app/api"
+import { pestoApi } from "../app/api/api"
 import { ContentTypeCard } from "../components/ContentType/ContentTypeCard"
 const { useProjectListQuery } = pestoApi
 

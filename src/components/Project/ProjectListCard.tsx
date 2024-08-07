@@ -1,13 +1,16 @@
 import { useState } from "preact/hooks";
-import { useAppDispatch } from "../../app/hooks"
+import { useAppDispatch } from "../../app/without_rtkquery/hooks"
 import {
-  PestoProjectApiEntity,
   DeleteProjectById,
   UpdateProject,
   RequestProjectList,
   // RequestProjectById,
   // pestoProjectListRequestOutput,
 } from "../../features/PestoApi/Projects/pestoProjectSlice"
+import {
+  PestoProjectApiEntity,
+} from "../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
 import { Button, TextInput, Card } from "flowbite-react"
 import { KeyRound as LuKeyRound, SaveAll as LuSaveAll } from 'lucide-preact';
 
@@ -245,6 +248,16 @@ export function ProjectListCard(props: ListProps): JSX.Element {
             >
               Remove
             </Button>
+            <a href={`/project/${project._id}/content-mgmt`}
+               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+               onClick={async() => {
+                console.log(`Passage en mode Édition - Detail Page`)
+                await setIsEditModeOn(true)
+              }}
+               >
+            Project's content management
+
+            </a>
       </div>
       </Card>
     </>

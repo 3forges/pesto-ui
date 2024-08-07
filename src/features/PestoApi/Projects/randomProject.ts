@@ -1,4 +1,7 @@
-import { PestoProjectApiEntity } from "./pestoProjectSlice"
+import {
+  PestoProjectApiEntity,
+} from "../../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
 /**
  * FEED RANDOM JSON FOR NEW-PROJECT-REQUEST
  * @returns PestoProjectApiEntity json object

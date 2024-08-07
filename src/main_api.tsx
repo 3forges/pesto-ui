@@ -16,6 +16,7 @@ const API_HOST = process.env.PESTO_API_HOST || `localhost`
 const API_HTTP_SCHEME = process.env.PESTO_API_HTTP_SCHEME || `http`
 const API_BASE_URL = `${API_HTTP_SCHEME}://${API_HOST}:${API_PORT}/`
 
+/*
 interface PestoProjectApiEntity {
   _id: string
   name: string
@@ -23,6 +24,11 @@ interface PestoProjectApiEntity {
   description: string
   createdAt?: string
 }
+*/
+import {
+  PestoProjectApiEntity,
+} from "./app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
 
 const api = createApi({
   baseQuery: fetchBaseQuery({

@@ -1,9 +1,9 @@
 import {
-  // RequestProjectList,
   PestoProjectApiEntity,
-} from "../features/PestoApi/Projects/pestoProjectSlice"
+} from "../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
 import { FunctionalComponent } from 'preact'
-import { pestoApi } from "../app/api"
+import { pestoApi } from "../app/api/api"
 import { Spinner } from "flowbite-react"
 import { ContentTypeCard } from "../components/ContentType/ContentTypeCard"
 const { useProjectDetailQuery } = pestoApi

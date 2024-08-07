@@ -1,13 +1,15 @@
 import { useEffect } from "preact/hooks"
-import { useAppDispatch, useAppSelector } from "../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/without_rtkquery/hooks"
 import {
   // RequestProjectList,
-  PestoProjectApiEntity,
   pestoProjectListRequestOutput,
   RequestProjectById,
-} from "../features/PestoApi/Projects/pestoProjectSlice"
-import { ProjectListCard } from "../components/Project/ProjectListCard"
+} from "../../features/PestoApi/Projects/pestoProjectSlice"
+import { ProjectListCard } from "../../components/Project/ProjectListCard"
 import { FunctionalComponent } from 'preact'
+import {
+  PestoProjectApiEntity,
+} from "../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
 
 
 

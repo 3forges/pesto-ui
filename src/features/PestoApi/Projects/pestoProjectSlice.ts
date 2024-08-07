@@ -1,7 +1,7 @@
 import { /*AnyAction, AsyncThunkAction, Dispatch, ThunkDispatch, */createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { RootState } from "../../../app/store"
+import { RootState } from "../../../app/without_rtkquery/store"
 import axios from "axios"
-import { useAppDispatch } from "../../../app/hooks"
+import { useAppDispatch } from "../../../app/without_rtkquery/hooks"
 
 
 /**
@@ -36,14 +36,11 @@ export enum methods { // STRICT METHODS
   PATCH = "PATCH",
 }
 // PESTO DATA TYPES
-export type PestoProjectApiEntity = {
-  _id?: number
-  name?: string
-  git_ssh_uri?: string
-  description?: string
-  createdAt?: string
-  __v?: number
-}
+import {
+  PestoProjectApiEntity,
+} from "../../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
+
 // AXIOS REQUEST READY
 export type AxiosRequest = {
   baseURL: urls

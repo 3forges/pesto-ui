@@ -8,8 +8,12 @@ import './index.css'
 // import App from "./App"
 import "./index.css"
 
-import { pestoApi } from '../../../app/api'
-import { PestoProjectApiEntity } from '../Projects/pestoProjectSlice';
+import { pestoApi } from '../../../app/api/api'
+
+import {
+  PestoProjectApiEntity,
+} from "../../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+
 const { useProjectListQuery, useProjectDetailQuery/*, useCreateNewProjectQuery, useUpdateProjectMutation*/ } = pestoApi
 
 import { Card } from 'flowbite-react';

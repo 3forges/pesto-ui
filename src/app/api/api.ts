@@ -3,7 +3,10 @@ import {
   fetchBaseQuery,
   // ApiEndpointQuery,
 } from "@reduxjs/toolkit/query/react";
-import { PestoProjectApiEntity } from "../features/PestoApi/Projects/pestoProjectSlice";
+
+import {
+  PestoProjectApiEntity,
+} from "../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
 
 const config = {
   PESTO_API_PORT: process.env.PESTO_API_PORT || `3000`,
@@ -264,6 +267,9 @@ export const pestoApi = createApi({
 });
 
 export const {
+  /**
+   * Pesto Projects
+   */
   useCreateNewProjectQuery,
   useUpdateProjectMutation,
   useProjectListQuery,

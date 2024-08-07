@@ -5,7 +5,7 @@ import './index.css'
 import React from "react"
 //import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
-import { store } from "./app/store"
+import { store } from "./app/without_rtkquery/store.ts"
 
 /**
  * 
@@ -14,7 +14,7 @@ import {ApiProvider } from "@reduxjs/toolkit/query/react"
 
 // import App from "./App"
 import "./index.css"
-import { pestoApi } from './app/api.ts'
+import { pestoApi } from './app/api/api.ts'
 
 import { SidebarContext } from './context/SideBarContext.tsx'
 

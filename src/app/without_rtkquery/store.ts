@@ -3,13 +3,13 @@ import { configureStore, ThunkAction, Action/*, Middleware*/ } from "@reduxjs/to
 // import { setupListeners } from '@reduxjs/toolkit/query'
 import { setupListeners } from '@reduxjs/toolkit/query/react'
 // import { getAllPestoProjectSlice, updatePestoProjectSlice, createPestoProjectSlice, deletePestoProjectSlice } from "../features/PestoApi/Projects/pestoProjectSlice"
-import pestoProjectListReducer from "../features/PestoApi/Projects/pestoProjectSlice"
+import pestoProjectListReducer from "../../features/PestoApi/Projects/pestoProjectSlice"
 
 
 import logger from 'redux-logger'
 
 // import untypedMiddleware from 'untyped-middleware'
-import { pestoApi } from "./api"
+import { pestoApi } from "../api/api"
 
 export const store = configureStore({
   // middleware: mySuperDooperMiddleware,
