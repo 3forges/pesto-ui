@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks"
 
 import {
-  PestoContentTypeApiEntity,
-} from "../app/api/entities/PestoContentTypeApiEntity"/* from "../../features/PestoApi/ContentTypes/pestoContentTypeSlice"*/
+  PestoProjectApiEntity,
+} from "../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
 
 import { Dropdown, Spinner, TextInput, Alert, Toast } from "flowbite-react"
 // import { HiCheck, HiExclamation, HiX } from 'react-icons/hi';
@@ -10,9 +10,10 @@ import { Dropdown, Spinner, TextInput, Alert, Toast } from "flowbite-react"
 // import { Highlighter, HandIcon, EyeOffIcon, EyeIcon, HopIcon, BellIcon } from 'lucide-preact'
 import { BellIcon } from 'lucide-preact'
 
-import { ContentTypeListCard } from "../components/ContentType/ContentTypeListCard"
 import { pestoApi } from "../app/api/endpoints/"
-const { useContentTypeListQuery } = pestoApi
+// import { ProjectListCard } from "../components/ContentType/ContentTypeListCard"
+import { ProjectListCard } from "../components/Project/ProjectListCard"
+const { useProjectListQuery } = pestoApi
 
 interface Filter {
   target: number
@@ -30,9 +31,9 @@ interface Filter {
  *  PROVIDE LIST WITH OPTIONAL BUTTONS (EDIT|REMOVE)
  * @returns PROJECT USER INTERFACE MANAGEMENT
  */
-export function PestoContentTypeList(): JSX.Element {
+export function PestoProjectList(): JSX.Element {
   const [filter, SetFilter] = useState({ target: 0, value: "" })
-  const { data: pestoContentTypeListData = [], isLoading, isError, isUninitialized, isSuccess } = useContentTypeListQuery()
+  const { data: pestoProjectListData = [], isLoading, isError, isUninitialized, isSuccess } = useProjectListQuery()
 
   if (isLoading || isUninitialized) {
     return (<div>
@@ -53,7 +54,7 @@ export function PestoContentTypeList(): JSX.Element {
 //          {//Highlighter, HandIcon, EyeOffIcon, EyeIcon, HopIcon, 
 //          }
 //        </div>
-//        <div className="ml-3 text-sm font-normal">Pesto ContentType Items loaded successfully.</div>
+//        <div className="ml-3 text-sm font-normal">Pesto Project Items loaded successfully.</div>
 //        <Toast.Toggle />
 //      </Toast>
 //      </>
@@ -78,42 +79,42 @@ export function PestoContentTypeList(): JSX.Element {
     {
       target: 1,
       value: "_id",
-      filterfunction: (item: PestoContentTypeApiEntity | any) => {
+      filterfunction: (item: PestoProjectApiEntity | any) => {
         return item._id.replace(filter.value, "") !== item._id
       },
     },
     {
       target: 2,
       value: "name",
-      filterfunction: (item: PestoContentTypeApiEntity | any) => {
+      filterfunction: (item: PestoProjectApiEntity | any) => {
         return item.name.replace(filter.value, "") !== item.name
       },
     },
     {
       target: 3,
       value: "git_ssh_uri",
-      filterfunction: (item: PestoContentTypeApiEntity | any) => {
+      filterfunction: (item: PestoProjectApiEntity | any) => {
         return item.git_ssh_uri.replace(filter.value, "") !== item.git_ssh_uri
       },
     },
     {
       target: 4,
       value: "description",
-      filterfunction: (item: PestoContentTypeApiEntity | any) => {
+      filterfunction: (item: PestoProjectApiEntity | any) => {
         return item.description.replace(filter.value, "") !== item.description
       },
     },
     {
       target: 5,
       value: "createdAt",
-      filterfunction: (item: PestoContentTypeApiEntity | any) => {
+      filterfunction: (item: PestoProjectApiEntity | any) => {
         return item.createdAt.replace(filter.value, "") !== item.createdAt
       },
     },
     {
       target: 6,
       value: "__v",
-      filterfunction: (item: PestoContentTypeApiEntity | any) => {
+      filterfunction: (item: PestoProjectApiEntity | any) => {
         return item.__v == filter.value
       },
     },
@@ -135,7 +136,7 @@ export function PestoContentTypeList(): JSX.Element {
             {//Highlighter, HandIcon, EyeOffIcon, EyeIcon, HopIcon, 
             }
           </div>
-          <div className="ml-3 text-sm font-normal">Pesto ContentType Items loaded successfully.</div>
+          <div className="ml-3 text-sm font-normal">Pesto Project Items loaded successfully.</div>
           <Toast.Toggle />
         </Toast>
         
@@ -186,15 +187,15 @@ export function PestoContentTypeList(): JSX.Element {
 
       {/* ----------------------PROJECT LIST------------------- */}
       <div className="projects">
-        {pestoContentTypeListData &&
-          pestoContentTypeListData[0] &&
-          pestoContentTypeListData[0]._id !== 0 &&
-          pestoContentTypeListData.map((contentType: PestoContentTypeApiEntity, index: number) => {
+        {pestoProjectListData &&
+          pestoProjectListData[0] &&
+          pestoProjectListData[0]._id !== 0 &&
+          pestoProjectListData.map((project: PestoProjectApiEntity, index: number) => {
             return (
               <div>
-                <span>ContentType # {index}</span>
-                <ContentTypeListCard
-                  contentType={contentType}
+                <span>Project # {index}</span>
+                <ProjectListCard
+                  project={project}
                   isEditModeOn={false}
                 />
               </div>

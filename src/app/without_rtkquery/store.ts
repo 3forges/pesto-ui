@@ -9,7 +9,7 @@ import pestoProjectListReducer from "../../features/PestoApi/Projects/pestoProje
 import logger from 'redux-logger'
 
 // import untypedMiddleware from 'untyped-middleware'
-import { pestoApi } from "../api/api"
+import { pestoApi } from "../api/endpoints/"
 
 export const store = configureStore({
   // middleware: mySuperDooperMiddleware,

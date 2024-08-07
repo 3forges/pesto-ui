@@ -3,31 +3,31 @@ import { Button, TextInput, Card, Toast } from "flowbite-react"
 import { Spinner } from "flowbite-react"
 import { KeyRound as LuKeyRound, SaveAll as LuSaveAll, BugIcon as LuErrorIcon, CheckIcon as LuSuccessIcon } from 'lucide-preact';
 import {
-  PestoProjectApiEntity,
-} from "../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
-import { useDeleteProjectMutation, useUpdateProjectMutation } from "../../app/api/api"
+  PestoContentTypeApiEntity,
+} from "../../app/api/entities/PestoContentTypeApiEntity"/* from "../../features/PestoApi/ContentTypes/pestoContentTypeSlice"*/
+import { useDeleteContentTypeMutation, useUpdateContentTypeMutation } from "../../app/api/endpoints/"
 
 
 interface ListProps {
-  project: PestoProjectApiEntity
+  contentType: PestoContentTypeApiEntity
   isEditModeOn?: boolean
 }
-interface ProjectCardEditModeOnProps {
-  project: PestoProjectApiEntity
+interface ContentTypeListCardEditModeOnProps {
+  contentType: PestoContentTypeApiEntity
   setIsEditModeOnHook: Function
-  setProjectHook: Function
+  setContentTypeHook: Function
 }
 
-export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProjectHook }: ProjectCardEditModeOnProps): JSX.Element {
+export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook, setContentTypeHook }: ContentTypeListCardEditModeOnProps): JSX.Element {
   const [
-    updateProject,
+    updateContentType,
     {
-      data: updatedProject,
-      isLoading: updatingProject,
+      data: updatedContentType,
+      isLoading: updatingContentType,
       /* isUninitialized,*/
       isSuccess
     }
-  ] = useUpdateProjectMutation();
+  ] = useUpdateContentTypeMutation();
 
 
   return (
@@ -39,29 +39,35 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
                       {// <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
                       }
                       <LuKeyRound />
-                      Project id: {project._id}
+                      ContentType id: {contentType._id}
                   </span>
-                  <span class="text-sm">Created at: {project.createdAt}</span>
+                  <span class="text-sm">Created at: {contentType.createdAt}</span>
               </div>
               <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">Edit project properties:</a></h2>
                 <div class="p-2 w-full bg-gray-200 flex justify-center items-center">
                   <TextInput
-                    id={`input_name_${project._id}`}
-                    value={project.name}
+                    id={`input_name_${contentType._id}`}
+                    value={contentType.name}
                     type="text"
-                    >Project name:
+                    >ContentType name:
                   </TextInput>
                   <TextInput
-                    id={`input_git_ssh_uri_${project._id}`}
-                    value={project.git_ssh_uri}
+                    id={`input_project_id_${contentType._id}`}
+                    value={contentType.project_id}
                     type="text"
-                    >Project GIT SSH URI:
+                    >ContentType Project ID:
                   </TextInput>
                   <TextInput
-                    id={`input_description_${project._id}`}
-                    value={project.description}
+                    id={`input_frontmatter_definition_${contentType._id}`}
+                    value={contentType.frontmatter_definition}
                     type="text"
-                    >Project description:
+                    >ContentType Frontmatter matter:
+                  </TextInput>
+                  <TextInput
+                    id={`input_description_${contentType._id}`}
+                    value={contentType.description}
+                    type="text"
+                    >ContentType Description:
                   </TextInput>
                 </div>
               {//
@@ -79,47 +85,52 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
                     type="submit"
                     onClick={async() => {
                       console.log(` >> CLICK UPDATE: `)
-                      const id: any = `${project._id}`
-                      const name: any = document.getElementById(`input_name_${project._id}`)
-                      const desc: any = document.getElementById(`input_description_${project._id}`)
-                      const uri: any = document.getElementById(`input_git_ssh_uri_${project._id}`)
-                      const created: any = `${project.createdAt}`
+                      const id: any = `${contentType._id}`
+                      const name: any = document.getElementById(`input_name_${contentType._id}`)
+                      const desc: any = document.getElementById(`input_project_id_${contentType._id}`)
+                      const project_id: any = document.getElementById(`input_frontmatter_definition_${contentType._id}`)
+                      const frontmatter_definition: any = document.getElementById(`input_description_${contentType._id}`)
+                      
+                      const created: any = `${contentType.createdAt}`
                       console.log(` - id = [${id}]`)
                       console.log(` - name = [${name}]`)
                       console.log(` - desc = [${desc}]`)
-                      console.log(` - uri = [${uri}]`)
+                      console.log(` - project_id = [${project_id}]`)
+                      console.log(` - frontmatter_definition = [${frontmatter_definition}]`)
                       console.log(` - created = [${created}]`)
                       // const V: any = document.getElementById(`${inputValue["_id"]+"__v"}`)
-                      const editedProject: PestoProjectApiEntity = {
+                      const editedContentType: PestoContentTypeApiEntity = {
                         _id: id,
                         name: name.value,
                         description: desc.value,
-                        git_ssh_uri: uri.value,
-                        createdAt: created,
+                        project_id: project_id.value,
+                        frontmatter_definition: frontmatter_definition.value,
+                        createdAt: created.value,
                         // __v: Math.floor(V.value*1),
                       }
-                      console.log("editedProject: ", editedProject)
+                      console.log("editedContentType: ", editedContentType)
 
-                      await setProjectHook(editedProject);
+                      await setContentTypeHook(editedContentType);
                       await setIsEditModeOnHook(false);
-                      await updateProject({
-                        _id: `${editedProject._id}`,
-                        name: editedProject.name,
-                        description: editedProject.description,
-                        git_ssh_uri: editedProject.git_ssh_uri,
-                        createdAt: editedProject.createdAt,
+                      await updateContentType({
+                        _id: `${editedContentType._id}`,
+                        name: editedContentType.name,
+                        description: editedContentType.description,
+                        project_id: editedContentType.project_id,
+                        frontmatter_definition: editedContentType.frontmatter_definition,
+                        createdAt: editedContentType.createdAt,
                       })
 
                       console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
                       console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
                       console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
-                      console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - !`)
-                      // console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseData = [${JSON.stringify(updatedProjectResponseData, null, 4)}]`)
-                      // console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsError = [${JSON.stringify(updatedProjectResponseIsError, null, 4)}]`)
-                      // console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsFetching = [${JSON.stringify(updatedProjectResponseIsFetching, null, 4)}]`)
-                      // console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsLoading = [${JSON.stringify(updatedProjectResponseIsLoading, null, 4)}]`)
-                      // console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsSuccess = [${JSON.stringify(updatedProjectResponseIsSuccess, null, 4)}]`)
-                      // console.log(` REDUX RTK - dans [ProjectCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsUninitialized = [${JSON.stringify(updatedProjectResponseIsUninitialized, null, 4)}]`)
+                      console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - !`)
+                      // console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - updatedContentTypeResponseData = [${JSON.stringify(updatedContentTypeResponseData, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - updatedContentTypeResponseIsError = [${JSON.stringify(updatedContentTypeResponseIsError, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - updatedContentTypeResponseIsFetching = [${JSON.stringify(updatedContentTypeResponseIsFetching, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - updatedContentTypeResponseIsLoading = [${JSON.stringify(updatedContentTypeResponseIsLoading, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - updatedContentTypeResponseIsSuccess = [${JSON.stringify(updatedContentTypeResponseIsSuccess, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ContentTypeListCardEditModeOn] - APRES[useUpdateContentTypeMutation] - updatedContentTypeResponseIsUninitialized = [${JSON.stringify(updatedContentTypeResponseIsUninitialized, null, 4)}]`)
                       
                       console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
                       console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
@@ -131,7 +142,7 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
                     
                     Update
 
-                    {updatingProject && (
+                    {updatingContentType && (
                         <Spinner aria-label="Updating project..." />
                     ) || (
                       <span></span>
@@ -140,7 +151,7 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
                     {isSuccess && (
                       <span>
                         {// 
-                        `${JSON.stringify(updatedProject, null, 4)}`
+                        `${JSON.stringify(updatedContentType, null, 4)}`
                         }
                       </span>
                     ) || (
@@ -167,35 +178,39 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
       </>
   )
 }
-export function ProjectCardEditModeOff(props: ListProps): JSX.Element {
+export function ContentTypeListCardEditModeOff(props: ListProps): JSX.Element {
   return (
     <>
       <div class="text-left">
         <div class="px-4 sm:px-0">
-          <h3 class="text-base font-semibold leading-7 text-gray-900">Pesto Project Informations</h3>
-          <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Project details</p>
+          <h3 class="text-base font-semibold leading-7 text-gray-900">Pesto ContentType Informations</h3>
+          <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">ContentType details</p>
         </div>
         <div class="mt-6 border-t border-gray-100">
           <dl class="divide-y divide-gray-100">
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt class="text-sm font-medium leading-6 text-gray-900">Project Id</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.project._id}</dd>
+              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Id</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType._id}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt class="text-sm font-medium leading-6 text-gray-900">Project Name</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.project.name}</dd>
+              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Name</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.name}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt class="text-sm font-medium leading-6 text-gray-900">Project Creation Date</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.project.createdAt}</dd>
+              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Creation Date</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.createdAt}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt class="text-sm font-medium leading-6 text-gray-900">Project Description</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.project.description}</dd>
+              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Description</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.description}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt class="text-sm font-medium leading-6 text-gray-900">Project Git SSH URI</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.project.git_ssh_uri}</dd>
+              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Project ID</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.project_id}</dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Frontmatter</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.frontmatter_definition}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">Attachments</dt>
@@ -241,35 +256,35 @@ export function ProjectCardEditModeOff(props: ListProps): JSX.Element {
 /**
  * RENDER project TO PROJECT-CARD
  * @param props
- *  project: PestoProjectApiEntity => data to render
+ *  project: PestoContentTypeApiEntity => data to render
  *
  *  callback: FUNCTION  => (optional) parent javascript for buttons
  * @returns PROJECT-CARD + BUTTONS (optional)
  */
-export function ContentTypeCard(props: ListProps): JSX.Element {
+export function ContentTypeListCard(props: ListProps): JSX.Element {
   //console.log(props)
   
  
   // useEffect(() => {
-  //   console.log(` [PestoProjectUI] Appel USE EFFECT [dispatch(RequestProjectList())]`)
-  //   dispatch(RequestProjectList())
+  //   console.log(` [PestoContentTypeUI] Appel USE EFFECT [dispatch(RequestContentTypeList())]`)
+  //   dispatch(RequestContentTypeList())
   // }, [dispatch])
   const [ isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
-  const [ project, setProject] = useState<PestoProjectApiEntity>(props.project);
-  const [deleteProject, {
+  const [ contentType, setContentType] = useState<PestoContentTypeApiEntity>(props.contentType);
+  const [deleteContentType, {
     isError: didDeletionThrowError,
-    isSuccess: hasSuccessfullyDeletedProject,
-    isLoading: isDeletingProject,
-  }] = useDeleteProjectMutation();
+    isSuccess: hasSuccessfullyDeletedContentType,
+    isLoading: isDeletingContentType,
+  }] = useDeleteContentTypeMutation();
   return (
     <>
       {// READONLY MODE
       }
       <Card>
       {isEditModeOn && (
-                  <ProjectCardEditModeOn setProjectHook={setProject} setIsEditModeOnHook={setIsEditModeOn} project={project} />
+                  <ContentTypeListCardEditModeOn setContentTypeHook={setContentType} setIsEditModeOnHook={setIsEditModeOn} contentType={contentType} />
                   ) || (
-                  <ProjectCardEditModeOff project={project} />
+                  <ContentTypeListCardEditModeOff contentType={contentType} />
                   )
                 }
       <div class="grid grid-cols-2 gap-2 z-0 p-3">
@@ -281,7 +296,7 @@ export function ContentTypeCard(props: ListProps): JSX.Element {
             >
               Edit
             </Button>
-            <a href={`/content-type/${project._id}`}
+            <a href={`/content-type/${contentType._id}`}
                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                onClick={async() => {
                 console.log(`Passage en mode Édition - Detail Page`)
@@ -293,33 +308,33 @@ export function ContentTypeCard(props: ListProps): JSX.Element {
             </a>
             <Button
               onClick={async () => {
-                await deleteProject({
-                  _id: `${project._id}`
+                await deleteContentType({
+                  _id: `${contentType._id}`
                 })
-                // await dispatch(DeleteProjectById(`${project._id}`))
+                // await dispatch(DeleteContentTypeById(`${project._id}`))
               }}
             >
 
               Remove
-              {isDeletingProject && (
-                        <Spinner aria-label="Romving project..." />
+              {isDeletingContentType && (
+                        <Spinner aria-label="Deleting project..." />
                     ) || (
                       <></>
                     )}
 
-                    {hasSuccessfullyDeletedProject && (
+                    {hasSuccessfullyDeletedContentType && (
 
                       <>
                             <Toast>
                               <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
                                 <LuSuccessIcon className="h-5 w-5" />
                               </div>
-                              <div className="ml-3 text-sm font-normal">Project {project.name} successfully deleted.</div>
+                              <div className="ml-3 text-sm font-normal">ContentType {contentType.name} successfully deleted.</div>
                               <Toast.Toggle />
                             </Toast>                    
                       <span>
                         {// 
-                        `${JSON.stringify(project, null, 4)}`
+                        `${JSON.stringify(contentType, null, 4)}`
                         }
                       </span>
                       </>
@@ -332,7 +347,7 @@ export function ContentTypeCard(props: ListProps): JSX.Element {
                             <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
                               <LuErrorIcon className="h-5 w-5" />
                             </div>
-                            <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${project.name}`} project:</div>
+                            <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${contentType.name}`} project:</div>
                             <div className="ml-3 text-sm font-normal">
                               <pre>
                                 
@@ -345,14 +360,14 @@ export function ContentTypeCard(props: ListProps): JSX.Element {
                     )}
             </Button>
 
-            <a href={`/project/${project._id}/content-mgmt`}
+            <a href={`/project/${contentType._id}/content-mgmt`}
                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                onClick={async() => {
                 console.log(`Passage en mode Édition - Detail Page`)
                 await setIsEditModeOn(true)
               }}
                >
-            Project's content management
+            ContentType's content management
 
             </a>
       </div>

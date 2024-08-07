@@ -17,6 +17,8 @@ import { PestoProjectContentMgmtUI } from '../pages/PestoProjectContentMgmtUI';
 // import FlowbiteExample1 from '../components/FlowbiteExample1';
 import { PestoContentTypeDetail } from '../pages/PestoContentTypeDetail';
 import { PestoContentTypeList } from '../pages/PestoContentTypeList';
+import { PestoProjectList } from '../pages/PestoProjectList';
+
 
 // import { TvIcon, BusIcon, CpuIcon, User2Icon, CircuitBoardIcon, BookMarkedIcon, BiohazardIcon, BotIcon, UserIcon, BaggageClaimIcon, ArrowUpSquareIcon, Table2Icon, RadarIcon, LogInIcon, GaugeCircleIcon } from 'lucide-preact';
 import { CpuIcon, UserIcon, BaggageClaimIcon, ArrowUpSquareIcon, Table2Icon, LogInIcon, GaugeCircleIcon } from 'lucide-preact';
@@ -257,14 +259,22 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
           <div class="p-2">
             <Router>
               <Route path="/" component={Home} />
-              <Route path="/projects" component={PestoProjectUI} />
+              <Route path="/projects" component={PestoProjectList} />
+              <Route path="/content-types" component={PestoContentTypeList} />
+              
+
+              {
+                // 
+                // <Route path="/projects" component={PestoProjectUI} />
+              }
               {//https://github.com/preactjs/preact-router/issues/405#issuecomment-927369168
                 // <PestoProjectDetailUI path="/projects/:id" project={{_id: parseInt(":id"), name: "fake", description: "fake", git_ssh_uri: "faketoo"}}/>
               }
               <Route path="/project/:project_id?" component={PestoProjectDetailUI} />
               <Route path="/project/:project_id?/content-mgmt" component={PestoProjectContentMgmtUI} />
               <Route path="/content-type/:project_id?" component={PestoContentTypeDetail} />
-              <Route path="/content-types" component={PestoContentTypeList} />
+              
+              
               <Route path="/about" component={About} />
               <Route path="/pricing" component={Pricing} />
               <Route path="/contact" component={Contact} />

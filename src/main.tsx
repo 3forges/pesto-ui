@@ -10,11 +10,14 @@ import { store } from "./app/without_rtkquery/store.ts"
 /**
  * 
  */
-import {ApiProvider } from "@reduxjs/toolkit/query/react"
+import { ApiProvider } from "@reduxjs/toolkit/query/react"
 
 // import App from "./App"
 import "./index.css"
-import { pestoApi } from './app/api/api.ts'
+// import { pestoApi } from './app/api/api.ts'
+// import * as api from './app/api/'
+import { pestoApi } from './app/api/endpoints/'
+
 
 import { SidebarContext } from './context/SideBarContext.tsx'
 
@@ -27,14 +30,15 @@ render(
                 // https://www.flowbite-react.com/docs/components/sidebar#
                 console.log(` >>> screenSize is : `, screenSize)
             }
-            }}>
+        }}>
 
-        <ApiProvider api={pestoApi}>
-      <Provider store={store}>
-          <App />
-      </Provider>
-      </ApiProvider>
+                <ApiProvider api={pestoApi}>
+                    <Provider store={store}>
+                        <App />
+                    </Provider>
+                </ApiProvider>
+
         </SidebarContext.Provider>
     </React.StrictMode>,
-   document.getElementById('root')!
+    document.getElementById('root')!
 )

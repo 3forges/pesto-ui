@@ -3,10 +3,11 @@ import {
 } from "../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
 
 import { FunctionalComponent } from 'preact'
-import { pestoApi } from "../app/api/api"
 import { Spinner } from "flowbite-react"
-import { ContentTypeCard } from "../components/ContentType/ContentTypeCard"
+import { ProjectListCard } from "../components/Project/ProjectListCard"
+import { pestoApi } from "../app/api/endpoints/"
 const { useProjectDetailQuery } = pestoApi
+
 
 
 
@@ -79,7 +80,7 @@ export const PestoContentTypeDetail: FunctionalComponent<PestoContentTypeDetailP
       <div className="p-2">
 
             {projectDetailQueryIsSuccess ? (
-                  <ContentTypeCard
+                  <ProjectListCard
                     project={projectDetail?projectDetail:defaultProjectDetails}
                     isEditModeOn={false}
                   />

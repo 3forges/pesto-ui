@@ -1,31 +1,35 @@
 import { useState } from "preact/hooks";
-import { useAppDispatch } from "../../app/without_rtkquery/hooks"
-import {
-  DeleteProjectById,
-  UpdateProject,
-  RequestProjectList,
-  // RequestProjectById,
-  // pestoProjectListRequestOutput,
-} from "../../features/PestoApi/Projects/pestoProjectSlice"
+import { Button, TextInput, Card, Toast } from "flowbite-react"
+import { Spinner } from "flowbite-react"
+import { KeyRound as LuKeyRound, SaveAll as LuSaveAll, BugIcon as LuErrorIcon, CheckIcon as LuSuccessIcon } from 'lucide-preact';
 import {
   PestoProjectApiEntity,
 } from "../../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
+import { useDeleteProjectMutation, useUpdateProjectMutation } from "../../app/api/endpoints/"
 
-import { Button, TextInput, Card } from "flowbite-react"
-import { KeyRound as LuKeyRound, SaveAll as LuSaveAll } from 'lucide-preact';
 
 interface ListProps {
   project: PestoProjectApiEntity
   isEditModeOn?: boolean
 }
-interface ProjectCardEditModeOnProps {
+interface ProjectListCardEditModeOnProps {
   project: PestoProjectApiEntity
   setIsEditModeOnHook: Function
   setProjectHook: Function
-  dispatch: Function
 }
 
-export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProjectHook, dispatch }: ProjectCardEditModeOnProps): JSX.Element {
+export function ProjectListCardEditModeOn({ project, setIsEditModeOnHook, setProjectHook }: ProjectListCardEditModeOnProps): JSX.Element {
+  const [
+    updateProject,
+    {
+      data: updatedProject,
+      isLoading: updatingProject,
+      /* isUninitialized,*/
+      isSuccess
+    }
+  ] = useUpdateProjectMutation();
+
+
   return (
       <>
 
@@ -51,13 +55,13 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
                     id={`input_git_ssh_uri_${project._id}`}
                     value={project.git_ssh_uri}
                     type="text"
-                    >Project GIT SSH URI:
+                    >Project Git SSH URI:
                   </TextInput>
                   <TextInput
                     id={`input_description_${project._id}`}
                     value={project.description}
                     type="text"
-                    >Project description:
+                    >Project Description:
                   </TextInput>
                 </div>
               {//
@@ -77,35 +81,78 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
                       console.log(` >> CLICK UPDATE: `)
                       const id: any = `${project._id}`
                       const name: any = document.getElementById(`input_name_${project._id}`)
+                      const git_ssh_uri: any = document.getElementById(`input_git_ssh_uri_${project._id}`)
                       const desc: any = document.getElementById(`input_description_${project._id}`)
-                      const uri: any = document.getElementById(`input_git_ssh_uri_${project._id}`)
                       const created: any = `${project.createdAt}`
                       console.log(` - id = [${id}]`)
                       console.log(` - name = [${name}]`)
                       console.log(` - desc = [${desc}]`)
-                      console.log(` - uri = [${uri}]`)
+                      console.log(` - git_ssh_uri = [${git_ssh_uri}]`)
                       console.log(` - created = [${created}]`)
                       // const V: any = document.getElementById(`${inputValue["_id"]+"__v"}`)
                       const editedProject: PestoProjectApiEntity = {
                         _id: id,
                         name: name.value,
                         description: desc.value,
-                        git_ssh_uri: uri.value,
-                        createdAt: created,
+                        git_ssh_uri: git_ssh_uri.value,
+                        createdAt: created.value,
                         // __v: Math.floor(V.value*1),
                       }
                       console.log("editedProject: ", editedProject)
-                      // await dispatch(UpdateProject(data))
-                      // await dispatch(UpdateProject(editedProject))
+
                       await setProjectHook(editedProject);
                       await setIsEditModeOnHook(false);
-                      await dispatch(UpdateProject(editedProject))
-                      await dispatch(RequestProjectList())
-                      // dispatch(RequestProjectList())
+                      await updateProject({
+                        _id: `${editedProject._id}`,
+                        name: editedProject.name,
+                        description: editedProject.description,
+                        git_ssh_uri: editedProject.git_ssh_uri,
+                        createdAt: editedProject.createdAt,
+                      })
+
+                      console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+                      console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+                      console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+                      console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - !`)
+                      // console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseData = [${JSON.stringify(updatedProjectResponseData, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsError = [${JSON.stringify(updatedProjectResponseIsError, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsFetching = [${JSON.stringify(updatedProjectResponseIsFetching, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsLoading = [${JSON.stringify(updatedProjectResponseIsLoading, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsSuccess = [${JSON.stringify(updatedProjectResponseIsSuccess, null, 4)}]`)
+                      // console.log(` REDUX RTK - dans [ProjectListCardEditModeOn] - APRES[useUpdateProjectMutation] - updatedProjectResponseIsUninitialized = [${JSON.stringify(updatedProjectResponseIsUninitialized, null, 4)}]`)
+                      
+                      console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+                      console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+                      console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+
                     }}
                   >
                     <LuSaveAll/>
+                    
                     Update
+
+                    {updatingProject && (
+                        <Spinner aria-label="Updating project..." />
+                    ) || (
+                      <span></span>
+                    )}
+
+                    {isSuccess && (
+                      <span>
+                        {// 
+                        `${JSON.stringify(updatedProject, null, 4)}`
+                        }
+                      </span>
+                    ) || (
+                      <span></span>
+                    )}
+
+
+                
+                    
+                    
+                    
+
                   </Button>
               </div>
           </article>
@@ -120,7 +167,7 @@ export function ProjectCardEditModeOn({ project, setIsEditModeOnHook, setProject
       </>
   )
 }
-export function ProjectCardEditModeOff(props: ListProps): JSX.Element {
+export function ProjectListCardEditModeOff(props: ListProps): JSX.Element {
   return (
     <>
       <div class="text-left">
@@ -201,7 +248,7 @@ export function ProjectCardEditModeOff(props: ListProps): JSX.Element {
  */
 export function ProjectListCard(props: ListProps): JSX.Element {
   //console.log(props)
-  const dispatch = useAppDispatch()
+  
  
   // useEffect(() => {
   //   console.log(` [PestoProjectUI] Appel USE EFFECT [dispatch(RequestProjectList())]`)
@@ -209,16 +256,20 @@ export function ProjectListCard(props: ListProps): JSX.Element {
   // }, [dispatch])
   const [ isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
   const [ project, setProject] = useState<PestoProjectApiEntity>(props.project);
-
+  const [deleteProject, {
+    isError: didDeletionThrowError,
+    isSuccess: hasSuccessfullyDeletedProject,
+    isLoading: isDeletingProject,
+  }] = useDeleteProjectMutation();
   return (
     <>
       {// READONLY MODE
       }
       <Card>
       {isEditModeOn && (
-                  <ProjectCardEditModeOn setProjectHook={setProject} dispatch={dispatch} setIsEditModeOnHook={setIsEditModeOn} project={project} />
+                  <ProjectListCardEditModeOn setProjectHook={setProject} setIsEditModeOnHook={setIsEditModeOn} project={project} />
                   ) || (
-                  <ProjectCardEditModeOff project={project} />
+                  <ProjectListCardEditModeOff project={project} />
                   )
                 }
       <div class="grid grid-cols-2 gap-2 z-0 p-3">
@@ -230,7 +281,6 @@ export function ProjectListCard(props: ListProps): JSX.Element {
             >
               Edit
             </Button>
-
             <a href={`/project/${project._id}`}
                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                onClick={async() => {
@@ -243,11 +293,58 @@ export function ProjectListCard(props: ListProps): JSX.Element {
             </a>
             <Button
               onClick={async () => {
-                await dispatch(DeleteProjectById(`${project._id}`))
+                await deleteProject({
+                  _id: `${project._id}`
+                })
+                // await dispatch(DeleteProjectById(`${project._id}`))
               }}
             >
+
               Remove
+              {isDeletingProject && (
+                        <Spinner aria-label="Deleting project..." />
+                    ) || (
+                      <></>
+                    )}
+
+                    {hasSuccessfullyDeletedProject && (
+
+                      <>
+                            <Toast>
+                              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+                                <LuSuccessIcon className="h-5 w-5" />
+                              </div>
+                              <div className="ml-3 text-sm font-normal">Project {project.name} successfully deleted.</div>
+                              <Toast.Toggle />
+                            </Toast>                    
+                      <span>
+                        {// 
+                        `${JSON.stringify(project, null, 4)}`
+                        }
+                      </span>
+                      </>
+                    ) || (
+                      <></>
+                    )}
+
+                    {didDeletionThrowError && (
+                          <Toast>
+                            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+                              <LuErrorIcon className="h-5 w-5" />
+                            </div>
+                            <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${project.name}`} project:</div>
+                            <div className="ml-3 text-sm font-normal">
+                              <pre>
+                                
+                              </pre>
+                            </div>
+                            <Toast.Toggle />
+                          </Toast>
+                    ) || (
+                      <></>
+                    )}
             </Button>
+
             <a href={`/project/${project._id}/content-mgmt`}
                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                onClick={async() => {
