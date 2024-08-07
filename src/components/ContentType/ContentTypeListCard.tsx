@@ -19,6 +19,33 @@ interface ContentTypeListCardEditModeOnProps {
 }
 
 export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook, setContentTypeHook }: ContentTypeListCardEditModeOnProps): JSX.Element {
+  const [editedContentType, setEditedContentType] = useState<PestoContentTypeApiEntity>(contentType);
+  
+      // Event handlers to update state variables
+      const handleNameChange = (event: { target: { value: any; }; }) => {
+        setEditedContentType({
+          ...editedContentType,
+          name: event.target.value
+        });
+    };
+    const handleDescChange = (event: { target: { value: any; }; }) => {
+      setEditedContentType({
+        ...editedContentType,
+        description: event.target.value
+      });
+  };
+  const handleFrontmatterDefChange = (event: { target: { value: any; }; }) => {
+    setEditedContentType({
+      ...editedContentType,
+      frontmatter_definition: event.target.value
+    });
+};
+const handleProjectIdChange = (event: { target: { value: any; }; }) => {
+  setEditedContentType({
+    ...editedContentType,
+    project_id: event.target.value
+  });
+};
   const [
     updateContentType,
     {
@@ -39,34 +66,38 @@ export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook
                       {// <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
                       }
                       <LuKeyRound />
-                      ContentType id: {contentType._id}
+                      ContentType id: {editedContentType._id}
                   </span>
                   <span class="text-sm">Created at: {contentType.createdAt}</span>
               </div>
               <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">Edit project properties:</a></h2>
                 <div class="p-2 w-full bg-gray-200 flex justify-center items-center">
                   <TextInput
-                    id={`input_name_${contentType._id}`}
-                    value={contentType.name}
+                    id={`input_name_${editedContentType._id}`}
+                    value={editedContentType.name}
                     type="text"
+                    onchange={handleNameChange}
                     >ContentType name:
                   </TextInput>
                   <TextInput
-                    id={`input_project_id_${contentType._id}`}
-                    value={contentType.project_id}
+                    id={`input_project_id_${editedContentType._id}`}
+                    value={editedContentType.project_id}
                     type="text"
+                    onchange={handleProjectIdChange}
                     >ContentType Project ID:
                   </TextInput>
                   <TextInput
-                    id={`input_frontmatter_definition_${contentType._id}`}
-                    value={contentType.frontmatter_definition}
+                    id={`input_frontmatter_definition_${editedContentType._id}`}
+                    value={editedContentType.frontmatter_definition}
                     type="text"
+                    onchange={handleFrontmatterDefChange}
                     >ContentType Frontmatter matter:
                   </TextInput>
                   <TextInput
-                    id={`input_description_${contentType._id}`}
-                    value={contentType.description}
+                    id={`input_description_${editedContentType._id}`}
+                    value={editedContentType.description}
                     type="text"
+                    onchange={handleDescChange}
                     >ContentType Description:
                   </TextInput>
                 </div>
@@ -85,29 +116,29 @@ export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook
                     type="submit"
                     onClick={async() => {
                       console.log(` >> CLICK UPDATE: `)
-                      const id: any = `${contentType._id}`
-                      const name: any = await document.getElementById(`input_name_${contentType._id}`)
-                      const project_id: any = await document.getElementById(`input_project_id_${contentType._id}`)
-                      const frontmatter_definition: any = await document.getElementById(`input_frontmatter_definition_${contentType._id}`)
-                      const desc: any = await document.getElementById(`input_description_${contentType._id}`)
+                      // const id: any = `${contentType._id}`
+                      // const name: any = await document.getElementById(`input_name_${contentType._id}`)
+                      // const project_id: any = await document.getElementById(`input_project_id_${contentType._id}`)
+                      // const frontmatter_definition: any = await document.getElementById(`input_frontmatter_definition_${contentType._id}`)
+                      // const desc: any = await document.getElementById(`input_description_${contentType._id}`)
                       
-                      const created: any = `${contentType.createdAt}`
-                      console.log(` Content Type Edit - id = [${id}]`)
-                      console.log(` Content Type Edit - name = [${name.value}]`)
-                      console.log(` Content Type Edit - desc = [${desc.value}]`)
-                      console.log(` Content Type Edit - project_id = [${project_id.value}]`)
-                      console.log(` Content Type Edit - frontmatter_definition = [${frontmatter_definition.value}]`)
-                      console.log(` Content Type Edit - created = [${created}]`)
+                      // const created: any = `${contentType.createdAt}`
+                      // console.log(` Content Type Edit - id = [${id}]`)
+                      // console.log(` Content Type Edit - name = [${name.value}]`)
+                      // console.log(` Content Type Edit - desc = [${desc.value}]`)
+                      // console.log(` Content Type Edit - project_id = [${project_id.value}]`)
+                      // console.log(` Content Type Edit - frontmatter_definition = [${frontmatter_definition.value}]`)
+                      // console.log(` Content Type Edit - created = [${created}]`)
                       // const V: any = document.getElementById(`${inputValue["_id"]+"__v"}`)
-                      const editedContentType: PestoContentTypeApiEntity = {
-                        _id: id,
+                      /*const editedContentType: PestoContentTypeApiEntity = {
+                        _id: editedContentType,
                         name: name.value,
                         description: desc.value,
                         project_id: project_id.value,
                         frontmatter_definition: frontmatter_definition.value,
                         createdAt: created,
                         // __v: Math.floor(V.value*1),
-                      }
+                      }*/
                       console.log("editedContentType: ", editedContentType)
 
                       await setContentTypeHook(editedContentType);
