@@ -86,18 +86,18 @@ export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook
                     onClick={async() => {
                       console.log(` >> CLICK UPDATE: `)
                       const id: any = `${contentType._id}`
-                      const name: any = document.getElementById(`input_name_${contentType._id}`)
-                      const desc: any = document.getElementById(`input_project_id_${contentType._id}`)
-                      const project_id: any = document.getElementById(`input_frontmatter_definition_${contentType._id}`)
-                      const frontmatter_definition: any = document.getElementById(`input_description_${contentType._id}`)
+                      const name: any = await document.getElementById(`input_name_${contentType._id}`)
+                      const project_id: any = await document.getElementById(`input_project_id_${contentType._id}`)
+                      const frontmatter_definition: any = await document.getElementById(`input_frontmatter_definition_${contentType._id}`)
+                      const desc: any = await document.getElementById(`input_description_${contentType._id}`)
                       
                       const created: any = `${contentType.createdAt}`
-                      console.log(` - id = [${id}]`)
-                      console.log(` - name = [${name}]`)
-                      console.log(` - desc = [${desc}]`)
-                      console.log(` - project_id = [${project_id}]`)
-                      console.log(` - frontmatter_definition = [${frontmatter_definition}]`)
-                      console.log(` - created = [${created}]`)
+                      console.log(` Content Type Edit - id = [${id}]`)
+                      console.log(` Content Type Edit - name = [${name.value}]`)
+                      console.log(` Content Type Edit - desc = [${desc.value}]`)
+                      console.log(` Content Type Edit - project_id = [${project_id.value}]`)
+                      console.log(` Content Type Edit - frontmatter_definition = [${frontmatter_definition.value}]`)
+                      console.log(` Content Type Edit - created = [${created}]`)
                       // const V: any = document.getElementById(`${inputValue["_id"]+"__v"}`)
                       const editedContentType: PestoContentTypeApiEntity = {
                         _id: id,
@@ -105,7 +105,7 @@ export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook
                         description: desc.value,
                         project_id: project_id.value,
                         frontmatter_definition: frontmatter_definition.value,
-                        createdAt: created.value,
+                        createdAt: created,
                         // __v: Math.floor(V.value*1),
                       }
                       console.log("editedContentType: ", editedContentType)
