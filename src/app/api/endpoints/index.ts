@@ -305,6 +305,9 @@ export const pestoApi = createApi({
       // configuration for an individual endpoint, overriding the api setting
       keepUnusedDataFor: 0,
     }),
+    /**
+     * the detailed infos of a content type will consist of the project it belongs to.
+     */
     contentTypeDetail: build.query<
       PestoContentTypeApiEntity,
       {
@@ -318,7 +321,7 @@ export const pestoApi = createApi({
     >({
       query: ({ _id }) => {
         console.log(" RTK QUERY - I am the [contentTypeDetail] query Fn ", _id);
-        return { url: `pesto-content-type/${_id}` };
+        return { url: `pesto-project/${_id}` };
       },
       // configuration for an individual endpoint, overriding the api setting
       keepUnusedDataFor: 0,

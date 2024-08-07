@@ -5,7 +5,6 @@ import './index.css'
 import React from "react"
 //import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
-import { store } from "./app/without_rtkquery/store.ts"
 
 /**
  * 
@@ -33,9 +32,7 @@ render(
         }}>
 
                 <ApiProvider api={pestoApi}>
-                    <Provider store={store}>
                         <App />
-                    </Provider>
                 </ApiProvider>
 
         </SidebarContext.Provider>

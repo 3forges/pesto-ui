@@ -4,14 +4,12 @@ import { Router, Route } from "preact-router"
 import { FunctionalComponent } from 'preact';
 import NavBar from '../components/NavBar'
 import PestoFooter from '../components/Footer';
-import { PestoProjectUI } from "../pages/without_rtkquery/PestoProjectUI"
 import Home from "../pages/Home"
 import About from "../pages/About"
 import Pricing from "../pages/Pricing"
 import Contact from "../pages/Contact"
 import type { CustomFlowbiteTheme } from 'flowbite-react';
 import { Button, Flowbite, Sidebar } from 'flowbite-react';
-import { PestoProjectDetailUI } from '../pages/without_rtkquery/PestoProjectDetailUI';
 import { PestoProjectContentMgmtUI } from '../pages/PestoProjectContentMgmtUI';
 
 // import FlowbiteExample1 from '../components/FlowbiteExample1';
@@ -25,6 +23,7 @@ import { CpuIcon, UserIcon, BaggageClaimIcon, ArrowUpSquareIcon, Table2Icon, Log
 import { GithubLoginButton } from '../components/login/github/GithubLoginButton';
 import { MarkdownEditor } from '../components/editor/MarkdownEditor';
 import { StateUpdater } from 'preact/hooks';
+import { PestoProjectDetail } from '../pages/PestoProjectDetail';
 
 const customTheme: CustomFlowbiteTheme = {
   button: {
@@ -270,7 +269,7 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
               {//https://github.com/preactjs/preact-router/issues/405#issuecomment-927369168
                 // <PestoProjectDetailUI path="/projects/:id" project={{_id: parseInt(":id"), name: "fake", description: "fake", git_ssh_uri: "faketoo"}}/>
               }
-              <Route path="/project/:project_id?" component={PestoProjectDetailUI} />
+              <Route path="/project/:project_id?" component={PestoProjectDetail} />
               <Route path="/project/:project_id?/content-mgmt" component={PestoProjectContentMgmtUI} />
               <Route path="/content-type/:project_id?" component={PestoContentTypeDetail} />
               
