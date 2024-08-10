@@ -184,12 +184,13 @@ export function PestoContentTypeList(): JSX.Element {
       {/* ----------------------PAGINATION------------------- */}
 
 
-      {/* ----------------------PROJECT LIST------------------- */}
+      {/* ----------------------CONTENT TYPES LIST------------------- */}
       <div className="projects">
         {pestoContentTypeListData &&
           pestoContentTypeListData[0] &&
           pestoContentTypeListData[0]._id !== 0 &&
           pestoContentTypeListData.map((contentType: PestoContentTypeApiEntity, index: number) => {
+            console.log(`Inside PestoContentTypeList.tsx - pestoContentTypeListData.map( - contentType: [${contentType.name}]`)
             return (
               <div>
                 <span>ContentType # {index}</span>

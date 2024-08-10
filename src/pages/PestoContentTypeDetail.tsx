@@ -6,7 +6,11 @@ import { FunctionalComponent } from 'preact'
 import { Spinner } from "flowbite-react"
 import { ContentTypeListCard } from "../components/ContentType/ContentTypeListCard"
 import { pestoApi } from "../app/api/endpoints/"
-const { useContentTypeDetailQuery } = pestoApi
+const { 
+  useContentTypeDetailQuery,
+  useProjectListQuery,/*,
+  useProjectListQuery*/
+} = pestoApi
 
 
 
@@ -15,7 +19,8 @@ const { useContentTypeDetailQuery } = pestoApi
   // <PestoContentTypeDetail path="/projects/:id" project={{_id: parseInt(":id"), name: "fake", description: "fake", git_ssh_uri: "faketoo"}}/>
 }
 interface PestoContentTypeDetailProps {
-  contentType: PestoContentTypeApiEntity;
+  // contentType: PestoContentTypeApiEntity;
+  content_type_id_param: string
 }
 /**
  * PROJECT MAIN COMPONENT
@@ -28,8 +33,8 @@ interface PestoContentTypeDetailProps {
  * @returns PROJECT USER INTERFACE MANAGEMENT
  */
 
-export const PestoContentTypeDetail: FunctionalComponent<PestoContentTypeDetailProps> = ({ contentType }: PestoContentTypeDetailProps): JSX.Element => {
-  console.log(`[PestoContentTypeDetail] - project_id: `, contentType.project_id)
+export const PestoContentTypeDetail: FunctionalComponent<PestoContentTypeDetailProps> = ({ content_type_id_param }: PestoContentTypeDetailProps): JSX.Element => {
+  console.log(`[PestoContentTypeDetail] - content_type_id_param: `, content_type_id_param)
   const defaultContentTypeDetails: PestoContentTypeApiEntity = {
     _id: -1,
     description: `bidon`,
@@ -46,15 +51,29 @@ export const PestoContentTypeDetail: FunctionalComponent<PestoContentTypeDetailP
     // isUninitialized: contentTypeDetailQueryIsUninitialized,
     // requestId: contentTypeDetailQueryRequestId
   } = useContentTypeDetailQuery({
-    _id: `${contentType.project_id}`,
+    _id: `${content_type_id_param}`,
   });
+
+  /*
+  const {
+    data: project,
+    isError: projectQueryIsError,
+    isFetching: projectQueryIsFetching,
+    isLoading: projectQueryIsLoading,
+    isSuccess: projectQueryIsSuccess,
+    // isUninitialized: projectQueryIsUninitialized,
+    // requestId: projectQueryRequestId
+  } = useProjectListQuery({
+    _id: `${contentTypeDetail?.project_id}`,
+  });
+  */
   
   // const fetchedContentType = await getContentTypeFromId(`${project_id}`);
 
   /* ----------------------- JSX ----------------------- */
   return (
     <div className="p-2">
-      <h2>ContentType Details</h2>
+      <h2>ContentType Details Its Here</h2>
       {/* ----------------------PROJECT DETAIL------------------- */}
 
             {contentTypeDetailQueryIsLoading ? (

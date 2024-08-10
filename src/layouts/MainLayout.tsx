@@ -271,7 +271,7 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
               }
               <Route path="/project/:project_id?" component={PestoProjectDetail} />
               <Route path="/project/:project_id?/content-mgmt" component={PestoProjectContentMgmtUI} />
-              <Route path="/content-type/:project_id?" component={PestoContentTypeDetail} />
+              <Route path="/content-type/:content_type_id_param?" component={PestoContentTypeDetail} />
               
               
               <Route path="/about" component={About} />

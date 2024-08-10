@@ -321,8 +321,9 @@ export const pestoApi = createApi({
     >({
       query: ({ _id }) => {
         console.log(" RTK QUERY - I am the [contentTypeDetail] query Fn ", _id);
-        return { url: `pesto-project/${_id}` };
+        return { url: `pesto-content-type/${_id}` };
       },
+      
       // configuration for an individual endpoint, overriding the api setting
       keepUnusedDataFor: 0,
     }),
