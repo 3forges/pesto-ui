@@ -258,8 +258,20 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
           <div class="p-2">
             <Router>
               <Route path="/" component={Home} />
+              {
+                /**
+                 * Projects
+                 */
+              }
               <Route path="/projects" component={PestoProjectList} />
+              <Route path="/project/:project_id?" component={PestoProjectDetail} />
+              {
+                /**
+                 * Content Types
+                 */
+              }
               <Route path="/content-types" component={PestoContentTypeList} />
+              <Route path="/content-type/:content_type_id_param?" component={PestoContentTypeDetail} />
               
 
               {
@@ -267,11 +279,9 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
                 // <Route path="/projects" component={PestoProjectUI} />
               }
               {//https://github.com/preactjs/preact-router/issues/405#issuecomment-927369168
-                // <PestoProjectDetailUI path="/projects/:id" project={{_id: parseInt(":id"), name: "fake", description: "fake", git_ssh_uri: "faketoo"}}/>
+                
               }
-              <Route path="/project/:project_id?" component={PestoProjectDetail} />
               <Route path="/project/:project_id?/content-mgmt" component={PestoProjectContentMgmtUI} />
-              <Route path="/content-type/:content_type_id_param?" component={PestoContentTypeDetail} />
               
               
               <Route path="/about" component={About} />

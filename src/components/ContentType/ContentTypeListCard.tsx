@@ -8,6 +8,7 @@ import {
 import { useDeleteContentTypeMutation, useProjectListQuery, useUpdateContentTypeMutation } from "../../app/api/endpoints/"
 import { PestoProjectApiEntity } from "../../app/api/entities/PestoProjectApiEntity";
 import { TargetedEvent } from "preact/compat";
+import { fmBooleanType, fmNumberType, fmStringType, fmUnSelectedType, FrontmatterField, FrontMatterFieldType } from "./ContentTypeContext";
 
 
 interface ContentTypeListCardProps {
@@ -106,11 +107,7 @@ export function GoodExampleForm({ contentType, setIsEditModeOnHook, setContentTy
   )
 
 }
-export interface FrontmatterField {
-  name: string,
-  fmType?: FrontMatterFieldType
-}
-export type FrontMatterFieldType = "fmString" | "fmNumber" | "fmBoolean" | "fmUnSelectType"
+
 export interface FrontmatterInputProps {
   field_index: number,
   name?: string,
@@ -118,20 +115,18 @@ export interface FrontmatterInputProps {
   setFrontmatterFieldListState: FrontmatterField[],
   setFrontmatterFieldListHook: Function
 }
-const fmStringType: FrontMatterFieldType = "fmString"
-const fmBooleanType: FrontMatterFieldType = "fmBoolean"
-const fmNumberType: FrontMatterFieldType = "fmNumber"
-const fmUnSelectType: FrontMatterFieldType = "fmUnSelectType"
-
 export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatterFieldListState, setFrontmatterFieldListHook }: FrontmatterInputProps): JSX.Element {
 
+  // const [field_index_in_array, setField_index_in_array] = useState<number>(field_index)
   const [name, setName] = useState<string>(p_name)
-  const [fmType, setFmType] = useState<string>(fmUnSelectType)
+  const [fmType, setFmType] = useState<string>(fmUnSelectedType)
 
-  const handleFrontmatterFieldNameChange = (event: { target: { value: any; }; }) => {
+  const handleFrontmatterFieldNameChange = (event: { target: { value: any; }; } | any) => {
+    // event.persist()
     console.log(` handleFrontmatterFieldNameChange -> event.target.value = `, event.target?.value)
     console.log(` handleFrontmatterFieldNameChange -> field_index = `, field_index)
     setName(event.target?.value);
+    console.log(` handleFrontmatterFieldNameChange -> setFrontmatterFieldListState = `, setFrontmatterFieldListState)
     let newArr = [...setFrontmatterFieldListState]; // copying the old datas array
     console.log(` handleFrontmatterFieldNameChange -> newArr = `, newArr)
     console.log(` handleFrontmatterFieldNameChange -> newArr.length = `, newArr.length)
@@ -139,7 +134,7 @@ export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatte
     
     
     // a deep copy is not needed as we are overriding the whole object below, and not setting a property of it. this does not mutate the state.
-    newArr[field_index - 1].name = event.target.value;
+    newArr[field_index].name = event.target.value;
     
     // setFrontmatterFieldListHook(newArr)
   };
@@ -167,8 +162,8 @@ export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatte
         //statements; 
         break;
       }
-      case fmUnSelectType: {
-        newFrontmatterFieldTypeValue = "fmUnSelectType"
+      case fmUnSelectedType: {
+        newFrontmatterFieldTypeValue = "fmUnSelectedType"
         //statements; 
         break;
       }
@@ -218,7 +213,7 @@ export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatte
           id={`fmFieldType_select_${field_index}`}
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
         >
-          <option selected={(fmType == fmUnSelectType)}>Select Field Type</option>
+          <option selected={(fmType == fmUnSelectedType)}>Select Field Type</option>
           <option selected={(fmType == fmStringType)} value={fmStringType}>String</option>
           <option selected={(fmType == fmBooleanType)} value={fmBooleanType}>Boolean</option>
           <option selected={(fmType == fmNumberType)} value={fmNumberType}>Number</option>
@@ -238,19 +233,35 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
   const [frontmatterFieldInputList, setFrontmatterFieldInputList] = useState<any[]>([]);
   const [frontmatterFieldList, setFrontmatterFieldList] = useState<FrontmatterField[]>([]);
 
-  // const handleAddFrontMatterField = (event: { target: { value: any; }; } | any) => {
-  const handleAddFrontMatterFieldInput = () => {
+  /**
+   * 
+   * @param event 
+   * 
+   * Ref. notes:
+   * Interesting about [event.persist()] - any hook that sets a state, provokes interferences with an event handler, cf. https://stackoverflow.com/questions/58106099/react-onclick-not-firing-on-first-click-second-click-behaves-as-expected-simpl
+   */
+  const handleAddFrontMatterFieldInput = (event: { target: { value: any; }; } | any) => {
+  // const handleAddFrontMatterFieldInput = () => {
+    event.persist();
+    console.log(` handleAddFrontMatterFieldInput - begin call `)
+    
     const newfmField: FrontmatterField = {
       name: "Default field name",
-      fmType: "fmUnSelectType"
+      fmType: "fmUnSelectedType"
     }
     console.log(` handleAddFrontMatterFieldInput - frontmatterFieldList BEFORE adding new field: `, frontmatterFieldList)
-    setFrontmatterFieldList(frontmatterFieldList.concat(newfmField));
+    const newfrontmatterFieldListArr = [...frontmatterFieldList]
+    newfrontmatterFieldListArr.push(newfmField)
+    // .concat();
+    setFrontmatterFieldList(newfrontmatterFieldListArr);
     console.log(` handleAddFrontMatterFieldInput - frontmatterFieldList AFTER adding new field: `, frontmatterFieldList)
-    setFrontmatterFieldInputList(frontmatterFieldInputList.concat(<FrontmatterInput field_index={frontmatterFieldInputList.length} name="default_name" setFrontmatterFieldListState={frontmatterFieldList} setFrontmatterFieldListHook={setFrontmatterFieldList} />));
+    const newfrontmatterFieldInputListArr = [...frontmatterFieldInputList]
+    newfrontmatterFieldInputListArr.push(<FrontmatterInput field_index={frontmatterFieldInputList.length} name="default_name" setFrontmatterFieldListState={frontmatterFieldList} setFrontmatterFieldListHook={setFrontmatterFieldList} />)
+    setFrontmatterFieldInputList(newfrontmatterFieldInputListArr);
   };
   // Event handlers to update state variables
-  const handleNameChange = (event: { target: { value: any; }; }) => {
+  const handleNameChange = (event: { target: { value: any; }; } | any) => {
+    // event.persist();
     setContentTypeHook({
       ...contentType,
       name: event.target.value
