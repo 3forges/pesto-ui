@@ -3,8 +3,9 @@ import { useState } from "preact/hooks"
 import {
   PestoContentTypeApiEntity,
 } from "../app/api/entities/PestoContentTypeApiEntity"/* from "../../features/PestoApi/ContentTypes/pestoContentTypeSlice"*/
-
-import { Dropdown, Spinner, TextInput, Alert, Toast } from "flowbite-react"
+import { Plus as LuPlus } from 'lucide-preact';
+import { Dropdown, Spinner, TextInput, Alert, Toast, Button, Modal } from "flowbite-react"
+// import {  } from "flowbite-react";
 // import { HiCheck, HiExclamation, HiX } from 'react-icons/hi';
 /// import { HiCheck, HiExclamation, HiX } from 'flowbite-react';
 // import { Highlighter, HandIcon, EyeOffIcon, EyeIcon, HopIcon, BellIcon } from 'lucide-preact'
@@ -13,7 +14,7 @@ import { BellIcon } from 'lucide-preact'
 import { ContentTypeListCard2 } from "./../components/ContentType/ContentTypeListCard2"
 import { pestoApi } from "../app/api/endpoints/"
 import { PestoContentTypeContextProvider } from "../components/ContentType/ContentTypeContext"
-const { useContentTypeListQuery } = pestoApi
+const { useContentTypeListQuery, useCreateNewContentTypeQuery } = pestoApi
 
 interface Filter {
   target: number
@@ -21,6 +22,66 @@ interface Filter {
   filterfunction: Function
 }
 
+export interface CreateContentTypeModalProps {
+  // modalId: string
+}
+export function CreateContentTypeModal(/* {modalId}: CreateContentTypeModalProps */): JSX.Element {
+  const [openCreateContentTypeModal, setOpenCreateContentTypeModal] = useState(false);
+  const newContentType: PestoContentTypeApiEntity = {
+    _id: 0,
+    name: `Type the name of the new content type`,
+    description: `Type the description of the new content type`,
+    frontmatter_definition: `export interface defaultFrontmatterName {
+
+    }
+    `,
+    project_id: `0`,
+    createdAt: ``,
+    __v: 0
+  }
+  return (
+    <>
+    {
+      // <Button onClick={() => setOpenModal(true)}>Toggle modal</Button>
+    }
+
+      <div class="m-3 grid gap-4 sm:grid-cols-2 sm:gap-6">
+            <div class="sm:col-span-2 inline-flex shadow-sm">
+              <button
+                data-modal-target="create-content-type-modal"
+                data-modal-toggle="create-content-type-modal"
+                type="button"
+                onClick={() => setOpenCreateContentTypeModal(true)}
+                class="py-2.5 px-5 me-2 mb-2 text-sm font-medium focus:z-10 focus:outline-none text-white bg-cyan-700 border border-transparent enabled:hover:bg-cyan-800 focus:ring-cyan-300 dark:bg-cyan-600 dark:enabled:hover:bg-cyan-700 dark:focus:ring-cyan-800 rounded-lg focus:ring-2"
+              >
+                <LuPlus />
+              </button>
+              </div>
+      </div>
+      <Modal show={openCreateContentTypeModal} onClose={() => setOpenCreateContentTypeModal(false)}>
+        <Modal.Header>Terms of Service</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6">
+          <PestoContentTypeContextProvider contentTypeApiEntity={newContentType}>
+              <div>
+                <span>New ContentType</span>
+                <ContentTypeListCard2
+                  isEditModeOn={true}
+                />
+              </div>
+              </PestoContentTypeContextProvider>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setOpenCreateContentTypeModal(false)}>I accept</Button>
+          <Button color="gray" onClick={() => setOpenCreateContentTypeModal(false)}>
+            Decline
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  )
+}
 /**
  * PROJECT MAIN COMPONENT
  *
@@ -33,6 +94,7 @@ interface Filter {
  */
 export function PestoContentTypeList(): JSX.Element {
   
+
   const { data: pestoContentTypeListData = [], isLoading, isError, isUninitialized, isSuccess } = useContentTypeListQuery()
 
   if (isLoading || isUninitialized) {
@@ -70,7 +132,7 @@ export function PestoContentTypeList(): JSX.Element {
       )
     }
     <div>
-
+      <CreateContentTypeModal />
       <hr style="margin:10px" />
 
       {/* ----------------------PAGINATION------------------- */}

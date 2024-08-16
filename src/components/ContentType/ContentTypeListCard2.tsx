@@ -426,7 +426,6 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
           <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit Content Type</h2>
           <form action="#">
             <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-
               <div class="sm:col-span-2">
                 {
                   // left key
