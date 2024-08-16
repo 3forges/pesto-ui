@@ -8,8 +8,7 @@ import {
 import { useDeleteContentTypeMutation, useProjectListQuery, useUpdateContentTypeMutation } from "../../app/api/endpoints/"
 import { PestoProjectApiEntity } from "../../app/api/entities/PestoProjectApiEntity";
 import { TargetedEvent } from "preact/compat";
-import { fmBooleanType, fmNumberType, fmStringType, fmUnSelectedType } from "./utils/ContentTypeContextUtils";
-import { FrontmatterField, FrontMatterFieldType } from "./ContentTypeContext";
+import { fmBooleanType, fmNumberType, fmStringType, fmUnSelectedType, FrontmatterField, FrontMatterFieldType } from "./ContentTypeContext";
 
 
 interface ContentTypeListCardProps {

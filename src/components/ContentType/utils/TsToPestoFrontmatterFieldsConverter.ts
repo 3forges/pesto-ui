@@ -17,7 +17,7 @@ import {
     // fmUnSelectedType,
     FrontmatterField,
     // FrontMatterFieldType,
-  } from "./../../components/ContentType/ContentTypeContext";
+  } from "./../../../components/ContentType/ContentTypeContext";
   /**
    * To test the thing :
    * https://stackblitz.com/edit/node-typescript-playground-jtmhvv?file=src%2Findex.ts,nodemon.json,src%2FValidator.ts,src%2Fyang-types%2Findex.ts,src%2Fmytypes%2Ftest1.ts,tsconfig.json
@@ -94,9 +94,10 @@ import {
       //   // /*setParentNodes */ true
       // );
       const project = new Project({
-        tsConfigFilePath: "tsconfig.json", //"path/to/tsconfig.json",
+        // tsConfigFilePath: "tsconfig.json", //"path/to/tsconfig.json",
         // skipFileDependencyResolution: true,
         skipAddingFilesFromTsConfig: true,
+        useInMemoryFileSystem: true, // otherwise the browser throws error "Error: Access to the file system is not supported in the browser. Please use an in-memory file system (specify `useInMemoryFileSystem: true` when creating the project)."
       });
       return project;
     };

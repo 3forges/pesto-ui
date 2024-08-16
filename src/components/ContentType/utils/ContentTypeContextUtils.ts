@@ -1,12 +1,13 @@
 /**
  * https://dev.to/madv/usecontext-with-typescript-23ln
  * https://blog.logrocket.com/how-to-use-react-context-typescript/
+ * best explanation: https://dmitripavlutin.com/react-context-and-usecontext/#4-updating-the-context , and in that page Ctrl + F (Hi! @OlegFilonchuk)
  */
-import { createContext, useContext } from "preact/compat";
-import { PestoContentTypeApiEntity } from "../../app/api/entities/PestoContentTypeApiEntity";
+import { PestoContentTypeApiEntity } from "../../../app/api/entities/PestoContentTypeApiEntity";
 
-import { FrontmatterTsValidator } from "../../ts.compiler/lib/diagnostics"
+// import { FrontmatterTsValidator } from "../../ts.compiler/lib/diagnostics"
 import { TsToPestoFrontmatterFieldsConverter } from "./TsToPestoFrontmatterFieldsConverter";
+import { FrontMatterFieldType, PestoContentTypeContextEntity } from "../ContentTypeContext";
 
 /**
  * ************************************************
@@ -31,41 +32,21 @@ import { TsToPestoFrontmatterFieldsConverter } from "./TsToPestoFrontmatterField
  *
  */
 
+
 export const fmStringType: FrontMatterFieldType = "fmString"
 export const fmBooleanType: FrontMatterFieldType = "fmBoolean"
 export const fmNumberType: FrontMatterFieldType = "fmNumber"
 export const fmUnSelectedType: FrontMatterFieldType = "fmUnSelectedType"
 
-export type FrontMatterFieldType =
-  | "fmString"
-  | "fmNumber"
-  | "fmBoolean"
-  | "fmUnSelectedType";
-export interface FrontmatterField {
-  name: string;
-  fmType: FrontMatterFieldType;
-}
-
-export type PestoContentTypeContext = {
-  _id: number;
-  name: string;
-  project_id: string;
-  frontmatter_definition: FrontmatterField[];
-  description: string;
-  createdAt: string;
-  __v?: number;
-};
-
-
 /**
  * We need a Utility to convert:
- * a {@PestoContentTypeContext } to a {@PestoContentTypeApiEntity }
- * a {@PestoContentTypeApiEntity } to a {@PestoContentTypeContext }
+ * a {@PestoContentTypeContextEntity } to a {@PestoContentTypeApiEntity }
+ * a {@PestoContentTypeApiEntity } to a {@PestoContentTypeContextEntity }
  *
  * Note:
  * - In {@PestoContentTypeApiEntity } the [frontmatter_definition] property is a string, which is expected to
  */
-export class PestoContentTypeContextUtils {
+export class PestoContentTypeContextEntityUtils {
   public static fmStringType: FrontMatterFieldType = "fmString"
   public static fmBooleanType: FrontMatterFieldType = "fmBoolean"
   public static fmNumberType: FrontMatterFieldType = "fmNumber"
@@ -135,15 +116,15 @@ export class PestoContentTypeContextUtils {
 
     switch (tsTypeValue) {
       case "boolean": {
-        return PestoContentTypeContextUtils.fmBooleanType;
+        return PestoContentTypeContextEntityUtils.fmBooleanType;
         //break;
       }
       case "number": {
-        return PestoContentTypeContextUtils.fmNumberType;
+        return PestoContentTypeContextEntityUtils.fmNumberType;
         //break;
       }
       case "string": {
-        return PestoContentTypeContextUtils.fmStringType;
+        return PestoContentTypeContextEntityUtils.fmStringType;
         //break;
       }
       default: {
@@ -157,13 +138,13 @@ export class PestoContentTypeContextUtils {
   };
 
   /**
-   * Converts a {@PestoContentTypeContext } instance, to convert to a {@PestoContentTypeApiEntity } instance.
-   * @param context The {@PestoContentTypeContext } instance to convert.
+   * Converts a {@PestoContentTypeContextEntity } instance, to convert to a {@PestoContentTypeApiEntity } instance.
+   * @param context The {@PestoContentTypeContextEntity } instance to convert.
    * @returns the [PestoContentTypeApiEntity] instance, resulting of the conversion.
-   * @throws an error, if, in the {@PestoContentTypeContext }.[frontmatter_definition], one of the {@FrontMatterField }'s {@FrontMatterFieldType } is "fmUnSelectedType"
+   * @throws an error, if, in the {@PestoContentTypeContextEntity }.[frontmatter_definition], one of the {@FrontMatterField }'s {@FrontMatterFieldType } is "fmUnSelectedType"
    */
   public static convertContextToApiEntity = (
-    context: PestoContentTypeContext
+    context: PestoContentTypeContextEntity
   ): PestoContentTypeApiEntity => {
     let toReturn: PestoContentTypeApiEntity;
     let convertedFrontmatter: string;
@@ -174,7 +155,7 @@ export interface ${context.name}_Frontmatter {
     for (let i = 0; i < context.frontmatter_definition.length; i++) {
       let currentField = context.frontmatter_definition[i];
       let currentFieldTsType =
-        PestoContentTypeContextUtils.convertFmTypeToTsType(currentField.fmType);
+        PestoContentTypeContextEntityUtils.convertFmTypeToTsType(currentField.fmType);
       convertedFrontmatter =
         convertedFrontmatter +
         `  ${currentField.name}: ${currentFieldTsType}
@@ -203,7 +184,7 @@ export interface ${context.name}_Frontmatter {
    */
   public static convertApiEntityToContext = (
     contentTypeApiEntity: PestoContentTypeApiEntity
-  ): PestoContentTypeContext => {
+  ): PestoContentTypeContextEntity => {
     const fmConverter = new TsToPestoFrontmatterFieldsConverter(contentTypeApiEntity.frontmatter_definition|| '')
 
     try {
@@ -229,7 +210,7 @@ export interface ${context.name}_Frontmatter {
  * For Tests:
  */
 /*
-const testCtxt1: PestoContentTypeContext= {
+const testCtxt1: PestoContentTypeContextEntity= {
     _id: "3453s5dsf554hdf57ndhgd",
     description: "desc of testCtxt1 ",
     name: "nameOftestCtxt1",
@@ -263,7 +244,7 @@ const testCtxt1: PestoContentTypeContext= {
     createdAt: "qsdqsdqsd"
 }
 
-let result1 = PestoContentTypeContextUtils.convert(testCtxt1)
+let result1 = PestoContentTypeContextEntityUtils.convert(testCtxt1)
 
 console.log(`result1 = `, result1)
 
@@ -293,42 +274,3 @@ export interface nameOftestCtxt1_Frontmatter {
  * ************************************************
  *
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export type ContentType = {
-  copy: PestoContentTypeApiEntity;
-  setCopy: (ct: PestoContentTypeApiEntity) => void;
-};
-export const ContentTypeContext = createContext<ContentType>({
-  copy: {}, // set a default value
-  setCopy: () => {},
-});
-export const useContentTypeContext = () => useContext(ContentTypeContext);

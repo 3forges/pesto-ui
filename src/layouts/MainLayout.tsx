@@ -14,7 +14,9 @@ import { PestoProjectContentMgmtUI } from '../pages/PestoProjectContentMgmtUI';
 
 // import FlowbiteExample1 from '../components/FlowbiteExample1';
 import { PestoContentTypeDetail } from '../pages/PestoContentTypeDetail';
+import { PestoContentTypeDetail2 } from '../pages/PestoContentTypeDetail2'
 import { PestoContentTypeList } from '../pages/PestoContentTypeList';
+import { PestoContentTypeList as PestoContentTypeList2 } from '../pages/PestoContentTypeList2';
 import { PestoProjectList } from '../pages/PestoProjectList';
 
 
@@ -271,7 +273,9 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
                  */
               }
               <Route path="/content-types" component={PestoContentTypeList} />
+              <Route path="/content-types2" component={PestoContentTypeList2} />
               <Route path="/content-type/:content_type_id_param?" component={PestoContentTypeDetail} />
+              <Route path="/content-type2/:content_type_id_param?" component={PestoContentTypeDetail2} />
               
 
               {
