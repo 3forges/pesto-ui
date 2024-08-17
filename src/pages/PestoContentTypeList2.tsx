@@ -75,7 +75,7 @@ export function CreateContentTypeModal(/* {modalId}: CreateContentTypeModalProps
                 <div className="ml-3 text-sm font-normal">An error was encountered while trying to create the {`${pestoContentTypeContext?.contentTypeContextEntity.name}`} content type:</div>
                 <div className="ml-3 text-sm font-normal">
                   <pre>
-                    {errorTryingToCreateContentType}
+                    {errorTryingToCreateContentType?errorTryingToCreateContentType:(<></>)}
                   </pre>
                 </div>
                 <Toast.Toggle />
