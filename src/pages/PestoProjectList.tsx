@@ -189,7 +189,7 @@ export function PestoProjectList(): JSX.Element {
       <div className="projects">
         {pestoProjectListData &&
           pestoProjectListData[0] &&
-          pestoProjectListData[0]._id !== 0 &&
+          pestoProjectListData[0]._id !== `0` &&
           pestoProjectListData.map((project: PestoProjectApiEntity, index: number) => {
             return (
               <div>

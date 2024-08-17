@@ -264,8 +264,8 @@ export const pestoApi = createApi({
      * -----------------------------------
      * -----------------------------------
      *************************************/
-    createNewContentType: build.query<
-      PestoContentTypeApiEntity[],
+    createNewContentType: build.mutation<
+      PestoContentTypeApiEntity,
       {
         v_name: string;
         v_project_id: string;
@@ -273,8 +273,18 @@ export const pestoApi = createApi({
         v_description: string;
       }
     >({
-      query({ v_name, v_project_id, v_frontmatter_definition, v_description }) {
-        console.log(` RTK QUERY - I am the [createNewContentType]`);
+      query({ 
+        v_name, 
+        v_project_id, 
+        v_frontmatter_definition, 
+        v_description 
+      }) {
+        console.log(` RTK QUERY - I am the [createNewContentType]. I will create the content type with: `, {
+          name: `${v_name}`,
+          project_id: `${v_project_id}`,
+          frontmatter_definition: `${v_frontmatter_definition}`,
+          description: `${v_description}`,
+        });
         return {
           window: null, // Can only be null. Used to disassociate request from any Window.
           url: "pesto-content-type",
@@ -513,7 +523,7 @@ export const {
   /**
    * Pesto Content Types
    */
-  useCreateNewContentTypeQuery,
+  useCreateNewContentTypeMutation,
   useUpdateContentTypeMutation,
   useContentTypeListQuery,
   useDeleteContentTypeMutation,

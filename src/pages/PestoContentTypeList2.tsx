@@ -1,20 +1,20 @@
-import { useState } from "preact/hooks"
+import { useContext, useState } from "preact/hooks"
 
 import {
   PestoContentTypeApiEntity,
 } from "../app/api/entities/PestoContentTypeApiEntity"/* from "../../features/PestoApi/ContentTypes/pestoContentTypeSlice"*/
-import { Plus as LuPlus } from 'lucide-preact';
-import { Dropdown, Spinner, TextInput, Alert, Toast, Button, Modal } from "flowbite-react"
+import { Spinner, Alert, Toast, Button, Modal } from "flowbite-react"
 // import {  } from "flowbite-react";
 // import { HiCheck, HiExclamation, HiX } from 'react-icons/hi';
 /// import { HiCheck, HiExclamation, HiX } from 'flowbite-react';
 // import { Highlighter, HandIcon, EyeOffIcon, EyeIcon, HopIcon, BellIcon } from 'lucide-preact'
-import { BellIcon } from 'lucide-preact'
+import { BugIcon as LuErrorIcon, CheckIcon as LuSuccessIcon, Plus as LuPlus, BellIcon, SaveAll as LuSaveAll } from 'lucide-preact'
 
 import { ContentTypeListCard2 } from "./../components/ContentType/ContentTypeListCard2"
 import { pestoApi } from "../app/api/endpoints/"
-import { PestoContentTypeContextProvider } from "../components/ContentType/ContentTypeContext"
-const { useContentTypeListQuery, useCreateNewContentTypeQuery } = pestoApi
+import { PestoContentTypeContext, PestoContentTypeContextProvider } from "../components/ContentType/ContentTypeContext"
+import { PestoContentTypeContextEntityUtils } from "../components/ContentType/utils/ContentTypeContextUtils"
+const { useContentTypeListQuery, useCreateNewContentTypeMutation } = pestoApi
 
 interface Filter {
   target: number
@@ -26,30 +26,68 @@ export interface CreateContentTypeModalProps {
   // modalId: string
 }
 export function CreateContentTypeModal(/* {modalId}: CreateContentTypeModalProps */): JSX.Element {
-  const [openCreateContentTypeModal, setOpenCreateContentTypeModal] = useState(false);
-  const newContentType: PestoContentTypeApiEntity = {
-    _id: 0,
-    name: `Type the name of the new content type`,
-    description: `Type the description of the new content type`,
-    frontmatter_definition: `export interface defaultFrontmatterName {
-
-    }
-    `,
-    project_id: `0`,
-    createdAt: ``,
-    __v: 0
+  const pestoContentTypeContext = useContext(PestoContentTypeContext)
+  if (!pestoContentTypeContext) {
+    throw new Error(`[ContentTypeListCard2] - [pestoContentTypeContext] is null or undefined!`)
   }
+  const [openCreateContentTypeModal, setOpenCreateContentTypeModal] = useState(false);
+  const [
+    createContentType,
+    {
+      data: createdContentTypeResponseData,
+      isError: didContentTypeCreationThrowError,
+      error: errorTryingToCreateContentType,
+      isLoading: isContentTypeCreationPending,
+      isSuccess: hasSuccessfullyCreatedContentType
+    }
+  ] = useCreateNewContentTypeMutation();
   return (
     <>
-    {
-      // <Button onClick={() => setOpenModal(true)}>Toggle modal</Button>
-    }
+      {isContentTypeCreationPending && (
+        <Spinner aria-label="Creating Content Type..." />
+      ) || (
+          <></>
+      )}
+      {hasSuccessfullyCreatedContentType && (
+        <>
+          <Toast>
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+              <LuSuccessIcon className="h-5 w-5" />
+            </div>
+            <div className="ml-3 text-sm font-normal">ContentType {JSON.stringify(createdContentTypeResponseData, null, 4)} successfully created.</div>
+            <Toast.Toggle />
+          </Toast>
+          <span>
+            {// 
+              `${JSON.stringify(createdContentTypeResponseData, null, 4)}`
+            }
+          </span>
+        </>
+      ) || (
+        <></>
+      )}
+
+      {didContentTypeCreationThrowError && (
+              <Toast>
+                <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+                  <LuErrorIcon className="h-5 w-5" />
+                </div>
+                <div className="ml-3 text-sm font-normal">An error was encountered while trying to create the {`${pestoContentTypeContext?.contentTypeContextEntity.name}`} content type:</div>
+                <div className="ml-3 text-sm font-normal">
+                  <pre>
+                    {errorTryingToCreateContentType}
+                  </pre>
+                </div>
+                <Toast.Toggle />
+              </Toast>
+            ) || (
+                <></>
+            )}
+
 
       <div class="m-3 grid gap-4 sm:grid-cols-2 sm:gap-6">
             <div class="sm:col-span-2 inline-flex shadow-sm">
               <button
-                data-modal-target="create-content-type-modal"
-                data-modal-toggle="create-content-type-modal"
                 type="button"
                 onClick={() => setOpenCreateContentTypeModal(true)}
                 class="py-2.5 px-5 me-2 mb-2 text-sm font-medium focus:z-10 focus:outline-none text-white bg-cyan-700 border border-transparent enabled:hover:bg-cyan-800 focus:ring-cyan-300 dark:bg-cyan-600 dark:enabled:hover:bg-cyan-700 dark:focus:ring-cyan-800 rounded-lg focus:ring-2"
@@ -59,23 +97,66 @@ export function CreateContentTypeModal(/* {modalId}: CreateContentTypeModalProps
               </div>
       </div>
       <Modal show={openCreateContentTypeModal} onClose={() => setOpenCreateContentTypeModal(false)}>
-        <Modal.Header>Terms of Service</Modal.Header>
+        <Modal.Header>New ContentType</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
-          <PestoContentTypeContextProvider contentTypeApiEntity={newContentType}>
+          
               <div>
-                <span>New ContentType</span>
                 <ContentTypeListCard2
+                  showButtons={false}
+                  showTitle={false}
                   isEditModeOn={true}
                 />
               </div>
-              </PestoContentTypeContextProvider>
+              
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setOpenCreateContentTypeModal(false)}>I accept</Button>
-          <Button color="gray" onClick={() => setOpenCreateContentTypeModal(false)}>
-            Decline
+          <Button 
+           onClick={async () => {
+            console.log(` >> CLICK CREATE CONTENT TYPE: `)
+            console.log("ContentType to create: [pestoContentTypeContext.contentTypeContextEntity]=", pestoContentTypeContext.contentTypeContextEntity)
+            console.log("ContentType to create: [JSON payload]=", JSON.stringify({
+              v_name: pestoContentTypeContext.contentTypeContextEntity.name,
+              v_description: pestoContentTypeContext.contentTypeContextEntity.description,
+              v_project_id: pestoContentTypeContext.contentTypeContextEntity.project_id,
+              v_frontmatter_definition: PestoContentTypeContextEntityUtils.convertContextToApiEntity(pestoContentTypeContext.contentTypeContextEntity).frontmatter_definition,
+            }, null, 4))
+
+            // await setIsEditModeOnHook(false);
+            await createContentType({
+              v_name: pestoContentTypeContext.contentTypeContextEntity.name,
+              v_description: pestoContentTypeContext.contentTypeContextEntity.description,
+              v_project_id: pestoContentTypeContext.contentTypeContextEntity.project_id,
+              v_frontmatter_definition: PestoContentTypeContextEntityUtils.convertContextToApiEntity(pestoContentTypeContext.contentTypeContextEntity).frontmatter_definition,
+            })
+
+            console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+            console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+            console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+            console.log(` REDUX RTK - dans [CreateContentTypeModal] - APRES[useCreateNewContentTypeMutation] - !`)
+            // console.log(` REDUX RTK - dans [CreateContentTypeModal] - APRES[useCreateNewContentTypeMutation] - createdContentTypeResponseData = [${JSON.stringify(createdContentTypeResponseData, null, 4)}]`)
+            // console.log(` REDUX RTK - dans [CreateContentTypeModal] - APRES[useCreateNewContentTypeMutation] - didContentTypeCreationThrowError = [${JSON.stringify(didContentTypeCreationThrowError, null, 4)}]`)
+            // console.log(` REDUX RTK - dans [CreateContentTypeModal] - APRES[useCreateNewContentTypeMutation] - isContentTypeCreationPending = [${JSON.stringify(isContentTypeCreationPending, null, 4)}]`)
+            // console.log(` REDUX RTK - dans [CreateContentTypeModal] - APRES[useCreateNewContentTypeMutation] - hasSuccessfullyCreatedContentType = [${JSON.stringify(hasSuccessfullyCreatedContentType, null, 4)}]`)
+            console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+            console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+            console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
+
+            await setOpenCreateContentTypeModal(false)
+           }}
+          >
+          <LuSaveAll className={`mr-2`} />
+          Save</Button>
+          <Button
+           color="gray"
+           onClick={() => {
+            console.log(` >> CLICK CANCEL CREATE CONTENT TYPE: `)
+            setOpenCreateContentTypeModal(false)
+           }}
+
+          >
+            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
@@ -132,7 +213,20 @@ export function PestoContentTypeList(): JSX.Element {
       )
     }
     <div>
+    <PestoContentTypeContextProvider contentTypeApiEntity={{
+      _id: 0,
+      name: `Type the name of the new content type`,
+      description: `Type the description of the new content type`,
+      frontmatter_definition: `export interface defaultFrontmatterName {
+
+      }
+      `,
+      project_id: `0`,
+      createdAt: ``,
+      __v: 0
+    }}>
       <CreateContentTypeModal />
+    </PestoContentTypeContextProvider>
       <hr style="margin:10px" />
 
       {/* ----------------------PAGINATION------------------- */}

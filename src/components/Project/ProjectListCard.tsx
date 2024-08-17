@@ -95,7 +95,7 @@ export function ProjectListCardEditModeOn({ project, setIsEditModeOnHook, setPro
                         name: name.value,
                         description: desc.value,
                         git_ssh_uri: git_ssh_uri.value,
-                        createdAt: created.value,
+                        createdAt: created,
                         // __v: Math.floor(V.value*1),
                       }
                       console.log("editedProject: ", editedProject)

@@ -150,7 +150,7 @@ export class PestoContentTypeContextEntityUtils {
     let convertedFrontmatter: string;
 
     convertedFrontmatter = `
-export interface ${context.name}_Frontmatter {
+export interface ${context.name.replace(/\s+/g, "_")}_Frontmatter {
 `;
     for (let i = 0; i < context.frontmatter_definition.length; i++) {
       let currentField = context.frontmatter_definition[i];
@@ -158,7 +158,7 @@ export interface ${context.name}_Frontmatter {
         PestoContentTypeContextEntityUtils.convertFmTypeToTsType(currentField.fmType);
       convertedFrontmatter =
         convertedFrontmatter +
-        `  ${currentField.name}: ${currentFieldTsType}
+        `  ${currentField.name.replace(/\s+/g, "_").replace(/\-/g, "_")}: ${currentFieldTsType}
 `;
     }
     convertedFrontmatter =

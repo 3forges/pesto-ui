@@ -1,6 +1,6 @@
 // PESTO DATA TYPES
 export type PestoProjectApiEntity = {
-    _id?: number
+    _id?: string
     name?: string
     git_ssh_uri?: string
     description?: string

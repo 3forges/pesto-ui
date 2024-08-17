@@ -2,9 +2,6 @@ import { useContext, useState } from "preact/hooks";
 import { Button, TextInput, Card, Toast, Alert } from "flowbite-react"
 import { Spinner } from "flowbite-react"
 import { KeyRound as LuKeyRound, SaveAll as LuSaveAll, BugIcon as LuErrorIcon, CheckIcon as LuSuccessIcon, BellIcon, Plus as LuPlus } from 'lucide-preact';
-import {
-  PestoContentTypeApiEntity,
-} from "../../app/api/entities/PestoContentTypeApiEntity"/* from "../../features/PestoApi/ContentTypes/pestoContentTypeSlice"*/
 import { useDeleteContentTypeMutation, useProjectListQuery, useUpdateContentTypeMutation } from "../../app/api/endpoints/"
 import { PestoProjectApiEntity } from "../../app/api/entities/PestoProjectApiEntity";
 import { TargetedEvent } from "preact/compat";
@@ -20,102 +17,15 @@ import { PestoContentTypeContext } from './ContentTypeContext'
 interface ContentTypeListCard2Props {
   // contentType: PestoContentTypeApiEntity
   isEditModeOn?: boolean
+  showButtons?: boolean
+  showTitle?: boolean
 }
 interface ContentTypeListCard2EditModeOnProps {
   //contentType: PestoContentTypeApiEntity
   setIsEditModeOnHook: Function
+  showButtons?: boolean
+  showTitle?: boolean
   //setContentTypeHook: Function
-}
-
-/**
- * - 
- * The "GoodExampleForm" is just a code snippet I want to
- * keep, just for usage in other pages in future, like 
- * forms where integer values must be constrained on a
- * field.
- * - 
- * @param param0 
- * @returns 
- */
-export function GoodExampleForm({ setIsEditModeOnHook }: ContentTypeListCard2EditModeOnProps): JSX.Element {
-  const pestoContentTypeContext = useContext(PestoContentTypeContext)
-  if (!pestoContentTypeContext) {
-    throw new Error(`[ContentTypeListCard2] - [pestoContentTypeContext] is null or undefined!`)
-  }
-  //console.log(`${pestoContentTypeContext.contentTypeContextEntity}, ${setIsEditModeOnHook}, ${pestoContentTypeContext.setContentTypeContextEntity}`) // this line has to be removed
-
-  return (
-    <>
-
-
-      <section class="bg-cyan-500 dark:bg-cyan-300  rounded-lg">
-        <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-          <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add a new product</h2>
-          <form action="#">
-            <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-
-              <div class="sm:col-span-2">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ID</label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                    <LuKeyRound />
-                  </div>
-                  <input type="text" id="email-address-icon" class="cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" disabled />
-                </div>
-              </div>
-
-
-              {
-                //<!-- below: disabled -->
-              }
-              <div class="sm:col-span-2">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
-                <input type="text" name="name" id="name" class="cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required={true} disabled />
-              </div>
-
-
-              <div class="sm:col-span-2">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
-                <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required={true} />
-              </div>
-
-
-              <div class="w-full">
-                <label for="brand" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
-                <input type="text" name="brand" id="brand" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Product brand" required={true} />
-              </div>
-              <div class="w-full">
-                <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="$2999" required={true} />
-              </div>
-              <div>
-                <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                  <option selected={true}>Select category</option>
-                  <option value="TV">TV/Monitors</option>
-                  <option value="PC">PC</option>
-                  <option value="GA">Gaming/Console</option>
-                  <option value="PH">Phones</option>
-                </select>
-              </div>
-              <div>
-                <label for="item-weight" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Weight (kg)</label>
-                <input type="number" name="item-weight" id="item-weight" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="12" required={true} />
-              </div>
-              <div class="sm:col-span-2">
-                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                <textarea id="description" rows={8} class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Your description here"></textarea>
-              </div>
-            </div>
-            <button type="submit" class="my-3 focus:outline-none text-white bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-900">
-              Add product
-            </button>
-          </form>
-        </div>
-      </section>
-    </>
-  )
-
 }
 
 export interface FrontmatterInputProps {
@@ -253,7 +163,7 @@ export function FrontmatterInput({ field_index, name: p_name = "", fmType: p_fmT
     </>
   )
 }
-export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }: ContentTypeListCard2EditModeOnProps): JSX.Element {
+export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook, showButtons = true, showTitle = true }: ContentTypeListCard2EditModeOnProps): JSX.Element {
   
   const pestoContentTypeContext = useContext(PestoContentTypeContext)
   if (!pestoContentTypeContext) {
@@ -399,6 +309,11 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
       /* isSuccess */
     }
   ] = useUpdateContentTypeMutation();
+  const isInExistingProjectsIDs = (project_id: string, existingProjectsIds: string []): boolean => {
+    let toReturn: boolean = false;
+    throw new Error(`[ContentTypeListCard2EditModeOnRedesigned] - [isInExistingProjectsIDs] - Not implemented exception`)
+    return toReturn;
+  }
   return (
     <>
 
@@ -423,7 +338,7 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
 
       <section class="bg-cyan-500 dark:bg-cyan-300  rounded-lg">
         <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-          <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit Content Type</h2>
+          {showTitle?(<h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit Content Type</h2>):(<></>)}
           <form action="#">
             <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
               <div class="sm:col-span-2">
@@ -477,9 +392,19 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
                     <></>
                   )
                   }
+                  {
+                    // TODO: if there are  projects created
+                    /**
+                     * then we must have an error preventing
+                     * the user from trying to create a pesto
+                     * content type:
+                     * otherwise, it is not possible to 
+                     * display a drop down list of projects you can select
+                     */
+                  }
                   {pestoProjectListData &&
                     pestoProjectListData[0] &&
-                    pestoProjectListData[0]._id !== 0 &&
+                    pestoProjectListData[0]._id !== `0` &&
                     pestoProjectListData.map((project: PestoProjectApiEntity, index: number) => {
                       return (
                         <option
@@ -502,16 +427,6 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
                   placeholder="Your description here"
                   onChange={handleDescChange}
                 >{pestoContentTypeContext.contentTypeContextEntity.description}</textarea>
-              </div>
-
-
-
-
-              <div class="sm:col-span-2 inline-flex shadow-sm" role="group">
-                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-                  Profile
-                </button>
-
               </div>
 
               <hr class="sm:col-span-2" />
@@ -542,6 +457,10 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
                *    -->
                */
             }
+
+            {showButtons?
+             (
+              <>
             <Button
             className={`mt-2`}
             type="submit"
@@ -628,6 +547,14 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
 
 
           </Button>
+              
+              </>
+             ): (
+              <>
+              
+              </>
+             )
+            }
 
 
           </form>
@@ -654,7 +581,7 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook }
 
 
 
-export function ContentTypeListCard2EditModeOff(props: ContentTypeListCard2Props): JSX.Element {
+export function ContentTypeListCard2EditModeOff({ showTitle = true }: ContentTypeListCard2Props): JSX.Element {
   const pestoContentTypeContext = useContext(PestoContentTypeContext)
   if (!pestoContentTypeContext) {
     throw new Error(`[ContentTypeListCard2/ContentTypeListCard2EditModeOff] - [pestoContentTypeContext] is null or undefined!`)
@@ -663,7 +590,7 @@ export function ContentTypeListCard2EditModeOff(props: ContentTypeListCard2Props
     <>
       <div class="text-left">
         <div class="px-4 sm:px-0">
-          <h3 class="text-base font-semibold leading-7 text-gray-900">Pesto ContentType Informations</h3>
+          {showTitle?(<h3 class="text-base font-semibold leading-7 text-gray-900">Pesto ContentType Informations</h3>):(<></>)}
           <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">ContentType details</p>
         </div>
         <div class="mt-6 border-t border-gray-100">
@@ -753,7 +680,7 @@ export function ContentTypeListCard2EditModeOff(props: ContentTypeListCard2Props
  *  callback: FUNCTION  => (optional) parent javascript for buttons
  * @returns PROJECT-CARD + BUTTONS (optional)
  */
-export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Element {
+export function ContentTypeListCard2({isEditModeOn: p_isEditModeOn = false, showButtons = true, showTitle = true}: ContentTypeListCard2Props): JSX.Element {
   //console.log(props)
 
 
@@ -761,7 +688,7 @@ export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Elem
   //   console.log(` [PestoContentTypeUI] Appel USE EFFECT [dispatch(RequestContentTypeList())]`)
   //   dispatch(RequestContentTypeList())
   // }, [dispatch])
-  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(props.isEditModeOn || false);
+  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(p_isEditModeOn || false);
   
   // const [contentType, setContentType] = useState<PestoContentTypeApiEntity>(props.contentType);
   const pestoContentTypeContext = useContext(PestoContentTypeContext)
@@ -770,6 +697,7 @@ export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Elem
   }
   
   const [deleteContentType, {
+    data: deletedContentType,
     isError: didDeletionThrowError,
     isSuccess: hasSuccessfullyDeletedContentType,
     isLoading: isDeletingContentType,
@@ -786,11 +714,16 @@ export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Elem
              * <ContentTypeListCard2EditModeOn setIsEditModeOnHook={setIsEditModeOn} />
              */
           
-          <ContentTypeListCard2EditModeOnRedesigned setIsEditModeOnHook={setIsEditModeOn} />
+          <ContentTypeListCard2EditModeOnRedesigned setIsEditModeOnHook={setIsEditModeOn} showButtons={showButtons} showTitle={showTitle} />
         ) || (
             <ContentTypeListCard2EditModeOff />
           )
         }
+
+
+            {showButtons?
+             (
+              <>
         <div class="grid grid-cols-2 gap-2 z-0 p-3">
           <Button
             onClick={async () => {
@@ -821,7 +754,7 @@ export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Elem
 
             Remove
             {isDeletingContentType && (
-              <Spinner aria-label="Deleting project..." />
+              <Spinner aria-label="Deleting Content Type..." />
             ) || (
                 <></>
               )}
@@ -833,12 +766,12 @@ export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Elem
                   <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
                     <LuSuccessIcon className="h-5 w-5" />
                   </div>
-                  <div className="ml-3 text-sm font-normal">ContentType {pestoContentTypeContext?.contentTypeContextEntity.name} successfully deleted.</div>
+                  <div className="ml-3 text-sm font-normal">ContentType {deletedContentType.name} successfully deleted.</div>
                   <Toast.Toggle />
                 </Toast>
                 <span>
                   {// 
-                    `${JSON.stringify(pestoContentTypeContext?.contentTypeContextEntity, null, 4)}`
+                    `${JSON.stringify(deletedContentType, null, 4)}`
                   }
                 </span>
               </>
@@ -874,7 +807,15 @@ export function ContentTypeListCard2(props: ContentTypeListCard2Props): JSX.Elem
             ContentType's content management
 
           </a>
-        </div>
+        </div>              
+              </>
+             ):(
+              <>
+              
+              </>
+             )
+             }
+
       </Card>
     </>
   )
