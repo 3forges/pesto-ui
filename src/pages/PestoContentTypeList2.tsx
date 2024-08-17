@@ -105,6 +105,7 @@ export function CreateContentTypeModal(/* {modalId}: CreateContentTypeModalProps
                 <ContentTypeListCard2
                   showButtons={false}
                   showTitle={false}
+                  showGeneratedFields={false}
                   isEditModeOn={true}
                 />
               </div>

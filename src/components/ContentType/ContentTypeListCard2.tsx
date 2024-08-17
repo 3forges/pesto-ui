@@ -1,4 +1,4 @@
-import { useContext, useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import { Button, TextInput, Card, Toast, Alert } from "flowbite-react"
 import { Spinner } from "flowbite-react"
 import { KeyRound as LuKeyRound, SaveAll as LuSaveAll, BugIcon as LuErrorIcon, CheckIcon as LuSuccessIcon, BellIcon, Plus as LuPlus } from 'lucide-preact';
@@ -19,12 +19,14 @@ interface ContentTypeListCard2Props {
   isEditModeOn?: boolean
   showButtons?: boolean
   showTitle?: boolean
+  showGeneratedFields?: boolean
 }
 interface ContentTypeListCard2EditModeOnProps {
   //contentType: PestoContentTypeApiEntity
   setIsEditModeOnHook: Function
   showButtons?: boolean
   showTitle?: boolean
+  showGeneratedFields?: boolean
   //setContentTypeHook: Function
 }
 
@@ -163,7 +165,8 @@ export function FrontmatterInput({ field_index, name: p_name = "", fmType: p_fmT
     </>
   )
 }
-export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook, showButtons = true, showTitle = true }: ContentTypeListCard2EditModeOnProps): JSX.Element {
+
+export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook, showButtons = true, showTitle = true, showGeneratedFields = true }: ContentTypeListCard2EditModeOnProps): JSX.Element {
   
   const pestoContentTypeContext = useContext(PestoContentTypeContext)
   if (!pestoContentTypeContext) {
@@ -309,14 +312,50 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook, 
       /* isSuccess */
     }
   ] = useUpdateContentTypeMutation();
-  const isInExistingProjectsIDs = (project_id: string, existingProjectsIds: string []): boolean => {
+
+  const isInExistingProjectsIDs = (project_id: string, fetchedPestoProjectListData: PestoProjectApiEntity[]): boolean => {
+    const existingProjectsIds: string[] = []
+    fetchedPestoProjectListData.forEach((project: PestoProjectApiEntity) => {
+      existingProjectsIds.push(`${project._id}`)
+    })
+
     let toReturn: boolean = false;
-    throw new Error(`[ContentTypeListCard2EditModeOnRedesigned] - [isInExistingProjectsIDs] - Not implemented exception`)
+    for (let index = 0; index < existingProjectsIds.length; index++) {
+      if (existingProjectsIds[index] == project_id) {
+        return true
+      }
+    }
+    // throw new Error(`[ContentTypeListCard2EditModeOnRedesigned] - [isInExistingProjectsIDs] - Not implemented exception`)
     return toReturn;
   }
+
+  /**
+   * This method initializes the [project_id]
+   * property of a Pesto
+   */
+  const initContextDependencies = (fetchedPestoProjectListData: PestoProjectApiEntity[]) => {
+    if (fetchedPestoProjectListData.length == 0) {
+      throw new Error(`[ContentTypeListCard2EditModeOnRedesigned] - [initContextDependencies] - there are zero existing project, wo it is impossible to set a default project ID for the Context - [PestoContentType.name] = [${pestoContentTypeContext.contentTypeContextEntity.name}]`)
+    }
+    const isContextProjectIdAnExistingProjectsID = isInExistingProjectsIDs(`${pestoContentTypeContext.contentTypeContextEntity.project_id}`, fetchedPestoProjectListData)
+    if (!isContextProjectIdAnExistingProjectsID) {
+      console.log(`[ContentTypeListCard2EditModeOnRedesigned] - [initContextDependencies] - restting [project_id] of the context, its value is [${pestoContentTypeContext.contentTypeContextEntity.project_id}], and it will be reset to [${fetchedPestoProjectListData[0]._id}]`)
+      pestoContentTypeContext.setContentTypeContextEntity({
+        ...pestoContentTypeContext.contentTypeContextEntity,
+        project_id: `${fetchedPestoProjectListData[0]._id}`
+      })
+    }
+  }
+  useEffect(() => {
+    /**
+     * 
+     */
+    initContextDependencies(pestoProjectListData)
+  }, [isSuccess]);
   return (
     <>
 
+      
       {isSuccess ? (
         <Toast>
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
@@ -342,18 +381,23 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook, 
           <form action="#">
             <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
               <div class="sm:col-span-2">
-                {
-                  // left key
-                }
+                {showGeneratedFields?(
+                  <>
                 <div class="flex justify-between items-center mb-5 text-gray-500">
                   <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-                    {// <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
-                    }
                     <LuKeyRound className={`mx-2`} />
                     {pestoContentTypeContext.contentTypeContextEntity._id}
                   </span>
                   <span class="text-sm">Created at: {pestoContentTypeContext.contentTypeContextEntity.createdAt}</span>
                 </div>
+                  </>
+                ):(
+                  <>
+
+                  </>
+                )
+                }
+
 
 
               </div>
@@ -395,11 +439,17 @@ export function ContentTypeListCard2EditModeOnRedesigned({ setIsEditModeOnHook, 
                   {
                     // TODO: if there are  projects created
                     /**
-                     * then we must have an error preventing
+                     * Then we must have an error preventing
                      * the user from trying to create a pesto
                      * content type:
                      * otherwise, it is not possible to 
                      * display a drop down list of projects you can select
+                     * 
+                     * - 
+                     * Note 1. 
+                     * The (pestoProjectListData[0]._id !== `0`)
+                     * condition below does not make sense anymore
+                     * --
                      */
                   }
                   {pestoProjectListData &&
@@ -680,7 +730,7 @@ export function ContentTypeListCard2EditModeOff({ showTitle = true }: ContentTyp
  *  callback: FUNCTION  => (optional) parent javascript for buttons
  * @returns PROJECT-CARD + BUTTONS (optional)
  */
-export function ContentTypeListCard2({isEditModeOn: p_isEditModeOn = false, showButtons = true, showTitle = true}: ContentTypeListCard2Props): JSX.Element {
+export function ContentTypeListCard2({isEditModeOn: p_isEditModeOn = false, showButtons = true, showTitle = true, showGeneratedFields = true}: ContentTypeListCard2Props): JSX.Element {
   //console.log(props)
 
 
@@ -709,15 +759,13 @@ export function ContentTypeListCard2({isEditModeOn: p_isEditModeOn = false, show
       }
       <Card>
         {isEditModeOn && (
-          
-            /**
-             * <ContentTypeListCard2EditModeOn setIsEditModeOnHook={setIsEditModeOn} />
-             */
-          
-          <ContentTypeListCard2EditModeOnRedesigned setIsEditModeOnHook={setIsEditModeOn} showButtons={showButtons} showTitle={showTitle} />
-        ) || (
-            <ContentTypeListCard2EditModeOff />
-          )
+           /**
+            * <ContentTypeListCard2EditModeOn setIsEditModeOnHook={setIsEditModeOn} />
+            */
+           <ContentTypeListCard2EditModeOnRedesigned setIsEditModeOnHook={setIsEditModeOn} showButtons={showButtons} showTitle={showTitle} showGeneratedFields={showGeneratedFields} />
+         ) || (
+           <ContentTypeListCard2EditModeOff />
+         )
         }
 
 
