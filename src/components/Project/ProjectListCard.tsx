@@ -11,6 +11,7 @@ import { useDeleteProjectMutation, useUpdateProjectMutation } from "../../app/ap
 interface ListProps {
   project: PestoProjectApiEntity
   isEditModeOn?: boolean
+  isEditable?: boolean
 }
 interface ProjectListCardEditModeOnProps {
   project: PestoProjectApiEntity
@@ -246,7 +247,7 @@ export function ProjectListCardEditModeOff(props: ListProps): JSX.Element {
  *  callback: FUNCTION  => (optional) parent javascript for buttons
  * @returns PROJECT-CARD + BUTTONS (optional)
  */
-export function ProjectListCard(props: ListProps): JSX.Element {
+export function ProjectListCard({project, isEditModeOn = false, isEditable = true}: ListProps): JSX.Element {
   //console.log(props)
   
  
@@ -254,8 +255,8 @@ export function ProjectListCard(props: ListProps): JSX.Element {
   //   console.log(` [PestoProjectUI] Appel USE EFFECT [dispatch(RequestProjectList())]`)
   //   dispatch(RequestProjectList())
   // }, [dispatch])
-  const [ isEditModeOn, setIsEditModeOn] = useState<boolean>(false);
-  const [ project, setProject] = useState<PestoProjectApiEntity>(props.project);
+  const [ isEditModeOnYesOrNo, setIsEditModeOnYesOrNo] = useState<boolean>(isEditModeOn);
+  const [ projectData, setProjectData] = useState<PestoProjectApiEntity>(project);
   const [deleteProject, {
     isError: didDeletionThrowError,
     isSuccess: hasSuccessfullyDeletedProject,
@@ -266,26 +267,29 @@ export function ProjectListCard(props: ListProps): JSX.Element {
       {// READONLY MODE
       }
       <Card>
-      {isEditModeOn && (
-                  <ProjectListCardEditModeOn setProjectHook={setProject} setIsEditModeOnHook={setIsEditModeOn} project={project} />
+      {isEditModeOnYesOrNo && (
+                  <ProjectListCardEditModeOn setProjectHook={setProjectData} setIsEditModeOnHook={setIsEditModeOnYesOrNo} project={projectData} />
                   ) || (
-                  <ProjectListCardEditModeOff project={project} />
+                  <ProjectListCardEditModeOff project={projectData} />
                   )
                 }
+
+      {isEditable?(
+        <>
       <div class="grid grid-cols-2 gap-2 z-0 p-3">
       <Button
               onClick={async() => {
                 console.log(`Passage en mode Édition`)
-                await setIsEditModeOn(true)
+                await setIsEditModeOnYesOrNo(true)
               }}
             >
               Edit
             </Button>
-            <a href={`/project/${project._id}`}
+            <a href={`/project/${projectData._id}`}
                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                onClick={async() => {
                 console.log(`Passage en mode Édition - Detail Page`)
-                await setIsEditModeOn(true)
+                await setIsEditModeOnYesOrNo(true)
               }}
                >
             Edit with Detail Page
@@ -294,7 +298,7 @@ export function ProjectListCard(props: ListProps): JSX.Element {
             <Button
               onClick={async () => {
                 await deleteProject({
-                  _id: `${project._id}`
+                  _id: `${projectData._id}`
                 })
                 // await dispatch(DeleteProjectById(`${project._id}`))
               }}
@@ -314,12 +318,12 @@ export function ProjectListCard(props: ListProps): JSX.Element {
                               <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
                                 <LuSuccessIcon className="h-5 w-5" />
                               </div>
-                              <div className="ml-3 text-sm font-normal">Project {project.name} successfully deleted.</div>
+                              <div className="ml-3 text-sm font-normal">Project {projectData.name} successfully deleted.</div>
                               <Toast.Toggle />
                             </Toast>                    
                       <span>
                         {// 
-                        `${JSON.stringify(project, null, 4)}`
+                        `${JSON.stringify(projectData, null, 4)}`
                         }
                       </span>
                       </>
@@ -332,7 +336,7 @@ export function ProjectListCard(props: ListProps): JSX.Element {
                             <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
                               <LuErrorIcon className="h-5 w-5" />
                             </div>
-                            <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${project.name}`} project:</div>
+                            <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${projectData.name}`} project:</div>
                             <div className="ml-3 text-sm font-normal">
                               <pre>
                                 
@@ -345,17 +349,24 @@ export function ProjectListCard(props: ListProps): JSX.Element {
                     )}
             </Button>
 
-            <a href={`/project/${project._id}/content-mgmt`}
+            <a href={`/project/${projectData._id}/content-mgmt`}
                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                onClick={async() => {
                 console.log(`Passage en mode Édition - Detail Page`)
-                await setIsEditModeOn(true)
+                await setIsEditModeOnYesOrNo(true)
               }}
                >
             Project's content management
 
             </a>
-      </div>
+      </div>        
+        </>
+      ):(
+        <>
+        
+        </>
+      ) }
+
       </Card>
     </>
   )

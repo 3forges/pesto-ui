@@ -13,10 +13,8 @@ import { Button, Flowbite, Sidebar } from 'flowbite-react';
 import { PestoProjectContentMgmtUI } from '../pages/PestoProjectContentMgmtUI';
 
 // import FlowbiteExample1 from '../components/FlowbiteExample1';
-import { PestoContentTypeDetail } from '../pages/PestoContentTypeDetail';
-import { PestoContentTypeDetail2 } from '../pages/PestoContentTypeDetail2'
+import { PestoContentTypeDetail } from '../pages/PestoContentTypeDetail'
 import { PestoContentTypeList } from '../pages/PestoContentTypeList';
-import { PestoContentTypeList as PestoContentTypeList2 } from '../pages/PestoContentTypeList2';
 import { PestoProjectList } from '../pages/PestoProjectList';
 
 
@@ -273,11 +271,14 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
                  */
               }
               <Route path="/content-types" component={PestoContentTypeList} />
-              <Route path="/content-types2" component={PestoContentTypeList2} />
               <Route path="/content-type/:content_type_id_param?" component={PestoContentTypeDetail} />
-              <Route path="/content-type2/:content_type_id_param?" component={PestoContentTypeDetail2} />
+              {
+                /**
+                 * Content per Project
+                 */
+              }
+              <Route path="/project/:project_id?/content-mgmt" component={PestoProjectContentMgmtUI} />
               
-
               {
                 // 
                 // <Route path="/projects" component={PestoProjectUI} />
@@ -285,7 +286,6 @@ export const MainLayout: FunctionalComponent<MainLayoutProps> = ({ children = <>
               {//https://github.com/preactjs/preact-router/issues/405#issuecomment-927369168
                 
               }
-              <Route path="/project/:project_id?/content-mgmt" component={PestoProjectContentMgmtUI} />
               
               
               <Route path="/about" component={About} />

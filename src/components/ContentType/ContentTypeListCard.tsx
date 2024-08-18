@@ -1,134 +1,60 @@
-import { useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import { Button, TextInput, Card, Toast, Alert } from "flowbite-react"
 import { Spinner } from "flowbite-react"
 import { KeyRound as LuKeyRound, SaveAll as LuSaveAll, BugIcon as LuErrorIcon, CheckIcon as LuSuccessIcon, BellIcon, Plus as LuPlus } from 'lucide-preact';
-import {
-  PestoContentTypeApiEntity,
-} from "../../app/api/entities/PestoContentTypeApiEntity"/* from "../../features/PestoApi/ContentTypes/pestoContentTypeSlice"*/
-import { useDeleteContentTypeMutation, useProjectListQuery, useUpdateContentTypeMutation } from "../../app/api/endpoints/"
+import { useDeleteContentTypeMutation, useProjectListQuery, useUpdateContentTypeMutation } from "../../app/api/endpoints"
 import { PestoProjectApiEntity } from "../../app/api/entities/PestoProjectApiEntity";
 import { TargetedEvent } from "preact/compat";
-import { fmBooleanType, fmNumberType, fmStringType, fmUnSelectedType } from "./utils/ContentTypeContextUtils";
+import { fmBooleanType, fmNumberType, fmStringType, fmUnSelectedType, PestoContentTypeContextEntityUtils } from "./utils/ContentTypeContextUtils";
 import { FrontmatterField, FrontMatterFieldType } from "./ContentTypeContext";
 
+/**
+ * Context imports
+ */
+
+import { PestoContentTypeContext } from './ContentTypeContext'
 
 interface ContentTypeListCardProps {
-  contentType: PestoContentTypeApiEntity
+  // contentType: PestoContentTypeApiEntity
   isEditModeOn?: boolean
+  showButtons?: boolean
+  showTitle?: boolean
+  showGeneratedFields?: boolean
 }
 interface ContentTypeListCardEditModeOnProps {
-  contentType: PestoContentTypeApiEntity
+  //contentType: PestoContentTypeApiEntity
   setIsEditModeOnHook: Function
-  setContentTypeHook: Function
-}
-
-/**
- * - 
- * The "GoodExampleForm" is just a code snippet I want to
- * keep, just for usage in other pages in future, like 
- * forms where integer values must be constrained on a
- * field.
- * - 
- * @param param0 
- * @returns 
- */
-export function GoodExampleForm({ contentType, setIsEditModeOnHook, setContentTypeHook }: ContentTypeListCardEditModeOnProps): JSX.Element {
-  console.log(`${contentType}, ${setIsEditModeOnHook}, ${setContentTypeHook}`) // this line has to be removed
-
-  return (
-    <>
-
-
-      <section class="bg-cyan-500 dark:bg-cyan-300  rounded-lg">
-        <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-          <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add a new product</h2>
-          <form action="#">
-            <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-
-              <div class="sm:col-span-2">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ID</label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                    <LuKeyRound />
-                  </div>
-                  <input type="text" id="email-address-icon" class="cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" disabled />
-                </div>
-              </div>
-
-
-              {
-                //<!-- below: disabled -->
-              }
-              <div class="sm:col-span-2">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
-                <input type="text" name="name" id="name" class="cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required={true} disabled />
-              </div>
-
-
-              <div class="sm:col-span-2">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
-                <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required={true} />
-              </div>
-
-
-              <div class="w-full">
-                <label for="brand" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
-                <input type="text" name="brand" id="brand" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Product brand" required={true} />
-              </div>
-              <div class="w-full">
-                <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="$2999" required={true} />
-              </div>
-              <div>
-                <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                  <option selected={true}>Select category</option>
-                  <option value="TV">TV/Monitors</option>
-                  <option value="PC">PC</option>
-                  <option value="GA">Gaming/Console</option>
-                  <option value="PH">Phones</option>
-                </select>
-              </div>
-              <div>
-                <label for="item-weight" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Weight (kg)</label>
-                <input type="number" name="item-weight" id="item-weight" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="12" required={true} />
-              </div>
-              <div class="sm:col-span-2">
-                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                <textarea id="description" rows={8} class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Your description here"></textarea>
-              </div>
-            </div>
-            <button type="submit" class="my-3 focus:outline-none text-white bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-900">
-              Add product
-            </button>
-          </form>
-        </div>
-      </section>
-    </>
-  )
-
+  showButtons?: boolean
+  showTitle?: boolean
+  showGeneratedFields?: boolean
+  //setContentTypeHook: Function
 }
 
 export interface FrontmatterInputProps {
   field_index: number,
   name?: string,
   fmType?: FrontMatterFieldType,
-  setFrontmatterFieldListState: FrontmatterField[],
-  setFrontmatterFieldListHook: Function
+  // setFrontmatterFieldListState: FrontmatterField[],
+  // setFrontmatterFieldListHook: Function
 }
-export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatterFieldListState, setFrontmatterFieldListHook }: FrontmatterInputProps): JSX.Element {
-
+export function FrontmatterInput({ field_index, name: p_name = "", fmType: p_fmType = "fmUnSelectedType"/*, setFrontmatterFieldListState, setFrontmatterFieldListHook*/ }: FrontmatterInputProps): JSX.Element {
+  const pestoContentTypeContext = useContext(PestoContentTypeContext)
+  if (!pestoContentTypeContext) {
+    throw new Error(`[ContentTypeListCard] - [pestoContentTypeContext] is null or undefined!`)
+  }
   // const [field_index_in_array, setField_index_in_array] = useState<number>(field_index)
   const [name, setName] = useState<string>(p_name)
-  const [fmType, setFmType] = useState<string>(fmUnSelectedType)
+  const [fmType, setFmType] = useState<string>(p_fmType)
 
   const handleFrontmatterFieldNameChange = (event: { target: { value: any; }; } | any) => {
     // event.persist()
     console.log(` handleFrontmatterFieldNameChange -> event.target.value = `, event.target?.value)
     console.log(` handleFrontmatterFieldNameChange -> field_index = `, field_index)
     setName(event.target?.value);
-    console.log(` handleFrontmatterFieldNameChange -> setFrontmatterFieldListState = `, setFrontmatterFieldListState)
-    let newArr = [...setFrontmatterFieldListState]; // copying the old datas array
+    // console.log(` handleFrontmatterFieldNameChange -> setFrontmatterFieldListState = `, JSON.stringify(pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition, null, 4))
+    console.log(` handleFrontmatterFieldNameChange -> [pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition] = `, JSON.stringify(pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition, null, 4))
+    
+    let newArr = [...pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition]; // copying the old datas array
     console.log(` handleFrontmatterFieldNameChange -> newArr = `, newArr)
     console.log(` handleFrontmatterFieldNameChange -> newArr.length = `, newArr.length)
     console.log(` handleFrontmatterFieldNameChange -> newArr[field_index] = `, newArr[field_index])
@@ -138,6 +64,10 @@ export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatte
     newArr[field_index].name = event.target.value;
     
     // setFrontmatterFieldListHook(newArr)
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
+      frontmatter_definition: newArr
+    })
   };
 
   const handleFrontmatterFieldTypeChange = (event: TargetedEvent<HTMLSelectElement, Event> | any) => {
@@ -149,37 +79,49 @@ export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatte
 
     switch (event.target?.value) {
       case fmStringType: {
+        console.log(` handleFrontmatterFieldTypeChange -> IN SWITCH on [event.target.value] = [${event.target?.value}], the selected SWITCH OPTION is indeed [fmStringType]`)
         newFrontmatterFieldTypeValue = "fmString"
         //statements; 
         break;
       }
       case fmBooleanType: {
+        console.log(` handleFrontmatterFieldTypeChange -> IN SWITCH on [event.target.value] = [${event.target?.value}], the selected SWITCH OPTION is indeed [fmBooleanType]`)
         newFrontmatterFieldTypeValue = "fmBoolean"
         //statements; 
         break;
       }
       case fmNumberType: {
+        console.log(` handleFrontmatterFieldTypeChange -> IN SWITCH on [event.target.value] = [${event.target?.value}], the selected SWITCH OPTION is indeed [fmNumberType]`)
         newFrontmatterFieldTypeValue = "fmNumber"
         //statements; 
         break;
       }
       case fmUnSelectedType: {
+        console.log(` handleFrontmatterFieldTypeChange -> IN SWITCH on [event.target.value] = [${event.target?.value}], the selected SWITCH OPTION is indeed [fmUnSelectedType]`)
         newFrontmatterFieldTypeValue = "fmUnSelectedType"
         //statements; 
         break;
       }
       default: {
         //statements;
+        console.log(` handleFrontmatterFieldTypeChange -> IN SWITCH on [event.target.value] = [${event.target?.value}], the selected SWITCH OPTION is indeed [DEFAULT]`)
         throw new Error(`handleFrontmatterFieldTypeChange -> Cannot determine which frontmatter field type from selected [${event.target?.value}]`)
         //break; 
       }
     }
     setFmType(newFrontmatterFieldTypeValue);
-    let newArr = [...setFrontmatterFieldListState]; // copying the old datas array
+    console.log(` handleFrontmatterFieldTypeChange -> pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition = `, JSON.stringify(pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition, null , 4))
+    console.log(` handleFrontmatterFieldTypeChange -> field_index = `, field_index)
+    
+    let newArr = [...pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition]; // copying the old datas array
     // a deep copy is not needed as we are overriding the whole object below, and not setting a property of it. this does not mutate the state.
     newArr[field_index].fmType = newFrontmatterFieldTypeValue;
     
-    setFrontmatterFieldListHook(newArr)
+    // setFrontmatterFieldListHook(newArr)
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
+      frontmatter_definition: newArr
+    })
   };
 
 
@@ -223,7 +165,13 @@ export function FrontmatterInput({ field_index, name: p_name = "", setFrontmatte
     </>
   )
 }
-export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEditModeOnHook, setContentTypeHook }: ContentTypeListCardEditModeOnProps): JSX.Element {
+
+export function ContentTypeListCardEditModeOnRedesigned({ setIsEditModeOnHook, showButtons = true, showTitle = true, showGeneratedFields = true }: ContentTypeListCardEditModeOnProps): JSX.Element {
+  
+  const pestoContentTypeContext = useContext(PestoContentTypeContext)
+  if (!pestoContentTypeContext) {
+    throw new Error(`[ContentTypeListCard] - [pestoContentTypeContext] is null or undefined!`)
+  }
   /**
    * frontmatterFieldList : 
    * so that's the list of fields in frontmatter
@@ -231,8 +179,19 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
    * 
    * its inital value will be set by transforming the FrontMatter Type retrieved from database in the form of a typescript interface...
    */
-  const [frontmatterFieldInputList, setFrontmatterFieldInputList] = useState<any[]>([]);
-  const [frontmatterFieldList, setFrontmatterFieldList] = useState<FrontmatterField[]>([]);
+  let initialFrontmatterFieldInputListArr = []
+  for (let index = 0; index < pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition.length; index++) {
+    const fmField = pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition[index];
+    initialFrontmatterFieldInputListArr.push(<FrontmatterInput field_index={index} name={fmField.name} fmType={fmField.fmType} />)
+  }
+  console.log(`[ContentTypeListCardEditModeOnRedesigned] - [initialFrontmatterFieldInputListArr] =`, initialFrontmatterFieldInputListArr)
+  const [frontmatterFieldInputList, setFrontmatterFieldInputList] = useState<any[]>(initialFrontmatterFieldInputListArr);
+  
+  /*
+  const [frontmatterFieldList, setFrontmatterFieldList] = useState<FrontmatterField[]>([
+    ...pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition
+  ]);
+  */
 
   /**
    * 
@@ -250,21 +209,31 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
       name: "Default field name",
       fmType: "fmUnSelectedType"
     }
-    console.log(` handleAddFrontMatterFieldInput - frontmatterFieldList BEFORE adding new field: `, frontmatterFieldList)
-    const newfrontmatterFieldListArr = [...frontmatterFieldList]
+    console.log(` handleAddFrontMatterFieldInput - [pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition] BEFORE adding new field: `, JSON.stringify(pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition, null, 4))
+    // const newfrontmatterFieldListArr = [...frontmatterFieldList]
+    const newfrontmatterFieldListArr = [
+      ...pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition
+    ]
     newfrontmatterFieldListArr.push(newfmField)
     // .concat();
-    setFrontmatterFieldList(newfrontmatterFieldListArr);
-    console.log(` handleAddFrontMatterFieldInput - frontmatterFieldList AFTER adding new field: `, frontmatterFieldList)
+    // setFrontmatterFieldList(newfrontmatterFieldListArr);
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
+      frontmatter_definition: newfrontmatterFieldListArr
+    })
+    // console.log(` handleAddFrontMatterFieldInput - frontmatterFieldList AFTER adding new field: `, frontmatterFieldList)
+    console.log(` handleAddFrontMatterFieldInput - [pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition] AFTER adding new field: `, JSON.stringify(pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition, null, 4))
+
+    
     const newfrontmatterFieldInputListArr = [...frontmatterFieldInputList]
-    newfrontmatterFieldInputListArr.push(<FrontmatterInput field_index={frontmatterFieldInputList.length} name="default_name" setFrontmatterFieldListState={frontmatterFieldList} setFrontmatterFieldListHook={setFrontmatterFieldList} />)
+    newfrontmatterFieldInputListArr.push(<FrontmatterInput field_index={pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition.length} />)
     setFrontmatterFieldInputList(newfrontmatterFieldInputListArr);
   };
   // Event handlers to update state variables
   const handleNameChange = (event: { target: { value: any; }; } | any) => {
     // event.persist();
-    setContentTypeHook({
-      ...contentType,
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
       name: event.target.value
     });
   };
@@ -274,17 +243,24 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
     console.log(` handleDescChange -> event.target = `, event.target)
     console.log(` handleDescChange -> event.currentTarget = `, event.currentTarget)
     console.log(` handleDescChange -> event.target.value = `, event.target?.value)
-    setContentTypeHook({
-      ...contentType,
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
       description: event.target.value
     });
   };
+
+  /**
+   * here a problem: one handler for the onChange of all of the array of Frontmatter fields? 
+   * @param event 
+   */
+  /*
   const handleFrontmatterDefChange = (event: { target: { value: any; }; }) => {
-    setContentTypeHook({
-      ...contentType,
-      frontmatter_definition: event.target.value
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
+      frontmatter_definition: event.targe t.value
     });
   };
+  */
 
 
   // const handleProjectIdChange = (event: { target: any; }) => {
@@ -296,8 +272,8 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
     console.log(` handleProjectIdChange -> event.currentTarget = `, event.currentTarget)
     console.log(` handleProjectIdChange -> event.target.value = `, event.target?.value) // there is a compilation error on value, but yet the selected value is indeed retrieved, the project id of the selected project.
     // console.log(` handleProjectIdChange -> value = `, value)
-    setContentTypeHook({
-      ...contentType,
+    pestoContentTypeContext.setContentTypeContextEntity({
+      ...pestoContentTypeContext.contentTypeContextEntity,
       // project_id: project_id
       // project_id: event.target.value
       project_id: event.target?.value
@@ -324,12 +300,62 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
   }
   if (isError) {
     return (<div>
-      <Alert>something went wrong fetching Pesto Projects for COntent Type {`${contentType.name}`} !</Alert>
+      <Alert>something went wrong fetching Pesto Projects for COntent Type {`${pestoContentTypeContext.contentTypeContextEntity.name}`} !</Alert>
     </div>)
   }
+  const [
+    updateContentType,
+    {
+      data: updatedContentType,
+      isLoading: updatingContentType,
+      /* isUninitialized,*/
+      /* isSuccess */
+    }
+  ] = useUpdateContentTypeMutation();
+
+  const isInExistingProjectsIDs = (project_id: string, fetchedPestoProjectListData: PestoProjectApiEntity[]): boolean => {
+    const existingProjectsIds: string[] = []
+    fetchedPestoProjectListData.forEach((project: PestoProjectApiEntity) => {
+      existingProjectsIds.push(`${project._id}`)
+    })
+
+    let toReturn: boolean = false;
+    for (let index = 0; index < existingProjectsIds.length; index++) {
+      if (existingProjectsIds[index] == project_id) {
+        return true
+      }
+    }
+    // throw new Error(`[ContentTypeListCardEditModeOnRedesigned] - [isInExistingProjectsIDs] - Not implemented exception`)
+    return toReturn;
+  }
+
+  /**
+   * This method initializes the [project_id]
+   * property of a Pesto
+   */
+  const initContextDependencies = (fetchedPestoProjectListData: PestoProjectApiEntity[]) => {
+    if (fetchedPestoProjectListData.length == 0) {
+      throw new Error(`[ContentTypeListCardEditModeOnRedesigned] - [initContextDependencies] - there are zero existing project, wo it is impossible to set a default project ID for the Context - [PestoContentType.name] = [${pestoContentTypeContext.contentTypeContextEntity.name}]`)
+    }
+    const isContextProjectIdAnExistingProjectsID = isInExistingProjectsIDs(`${pestoContentTypeContext.contentTypeContextEntity.project_id}`, fetchedPestoProjectListData)
+    if (!isContextProjectIdAnExistingProjectsID) {
+      console.log(`[ContentTypeListCardEditModeOnRedesigned] - [initContextDependencies] - restting [project_id] of the context, its value is [${pestoContentTypeContext.contentTypeContextEntity.project_id}], and it will be reset to [${fetchedPestoProjectListData[0]._id}]`)
+      pestoContentTypeContext.setContentTypeContextEntity({
+        ...pestoContentTypeContext.contentTypeContextEntity,
+        project_id: `${fetchedPestoProjectListData[0]._id}`
+      })
+    }
+  }
+  useEffect(() => {
+    /**
+     * 
+     */
+    initContextDependencies(pestoProjectListData)
+  }, [isSuccess]);
   return (
     <>
 
+      
       {isSuccess ? (
         <Toast>
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
@@ -351,37 +377,41 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
 
       <section class="bg-cyan-500 dark:bg-cyan-300  rounded-lg">
         <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-          <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit Content Type</h2>
+          {showTitle?(<h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Edit Content Type</h2>):(<></>)}
           <form action="#">
             <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-
               <div class="sm:col-span-2">
-                {
-                  // left key
-                }
+                {showGeneratedFields?(
+                  <>
                 <div class="flex justify-between items-center mb-5 text-gray-500">
                   <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-                    {// <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
-                    }
                     <LuKeyRound className={`mx-2`} />
-                    {contentType._id}
+                    {pestoContentTypeContext.contentTypeContextEntity._id}
                   </span>
-                  <span class="text-sm">Created at: {contentType.createdAt}</span>
+                  <span class="text-sm">Created at: {pestoContentTypeContext.contentTypeContextEntity.createdAt}</span>
                 </div>
+                  </>
+                ):(
+                  <>
+
+                  </>
+                )
+                }
+
 
 
               </div>
 
               <div class="sm:col-span-2">
-                <label for={`input_name_${contentType._id}`} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                <label for={`input_name_${pestoContentTypeContext.contentTypeContextEntity._id}`} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
                 <TextInput
                   type="text"
                   name="name"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Type product name"
                   required={true}
-                  id={`input_name_${contentType._id}`}
-                  value={contentType.name || "Type product name"}
+                  id={`input_name_${pestoContentTypeContext.contentTypeContextEntity._id}`}
+                  value={pestoContentTypeContext.contentTypeContextEntity.name || "Type product name"}
                   onchange={handleNameChange}
                 />
               </div>
@@ -406,14 +436,30 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
                     <></>
                   )
                   }
+                  {
+                    // TODO: if there are  projects created
+                    /**
+                     * Then we must have an error preventing
+                     * the user from trying to create a pesto
+                     * content type:
+                     * otherwise, it is not possible to 
+                     * display a drop down list of projects you can select
+                     * 
+                     * - 
+                     * Note 1. 
+                     * The (pestoProjectListData[0]._id !== `0`)
+                     * condition below does not make sense anymore
+                     * --
+                     */
+                  }
                   {pestoProjectListData &&
                     pestoProjectListData[0] &&
-                    pestoProjectListData[0]._id !== 0 &&
+                    pestoProjectListData[0]._id !== `0` &&
                     pestoProjectListData.map((project: PestoProjectApiEntity, index: number) => {
                       return (
                         <option
                           value={`${project._id}`}
-                          selected={(`${project._id}` == `${contentType.project_id}`)}
+                          selected={(`${project._id}` == `${pestoContentTypeContext.contentTypeContextEntity.project_id}`)}
                         >{`${project.name} (ID: ${project._id})`}
                         </option>
                       )
@@ -430,17 +476,7 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Your description here"
                   onChange={handleDescChange}
-                >{contentType.description}</textarea>
-              </div>
-
-
-
-
-              <div class="sm:col-span-2 inline-flex shadow-sm" role="group">
-                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-                  Profile
-                </button>
-
+                >{pestoContentTypeContext.contentTypeContextEntity.description}</textarea>
               </div>
 
               <hr class="sm:col-span-2" />
@@ -462,116 +498,20 @@ export function ContentTypeListCardEditModeOnRedesigned({ contentType, setIsEdit
 
               <hr class="sm:col-span-2" />
             </div>
-            <button type="submit" class="my-3 mt-8 focus:outline-none text-white bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-900">
-             Save (Update content type)
-            </button>
-          </form>
-        </div>
-      </section>
-    </>
-  )
-
-}
-export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook, setContentTypeHook }: ContentTypeListCardEditModeOnProps): JSX.Element {
-  //const [editedContentType, setEditedContentType] = useState<PestoContentTypeApiEntity>(contentType);
-
-  // Event handlers to update state variables
-  const handleNameChange = (event: { target: { value: any; }; }) => {
-    setContentTypeHook({
-      ...contentType,
-      name: event.target.value
-    });
-  };
-  const handleDescChange = (event: { target: { value: any; }; }) => {
-    setContentTypeHook({
-      ...contentType,
-      description: event.target.value
-    });
-  };
-  const handleFrontmatterDefChange = (event: { target: { value: any; }; }) => {
-    setContentTypeHook({
-      ...contentType,
-      frontmatter_definition: event.target.value
-    });
-  };
-  const handleProjectIdChange = (event: { target: { value: any; }; }) => {
-    setContentTypeHook({
-      ...contentType,
-      project_id: event.target.value
-    });
-  };
-  const [
-    updateContentType,
-    {
-      data: updatedContentType,
-      isLoading: updatingContentType,
-      /* isUninitialized,*/
-      isSuccess
-    }
-  ] = useUpdateContentTypeMutation();
-
-
-  return (
-    <>
-
-
-      <ContentTypeListCardEditModeOnRedesigned contentType={contentType}
-        setIsEditModeOnHook={setIsEditModeOnHook}
-        setContentTypeHook={setContentTypeHook} />
-
-
-      <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-        <div class="flex justify-between items-center mb-5 text-gray-500">
-          <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-            {// <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
+            {
+              /**
+               *    <!-- 
+               *      <button type="submit" class="my-3 mt-8 focus:outline-none text-white bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-900">
+               *       Save (Update content type)
+               *      </button>
+               *    -->
+               */
             }
-            <LuKeyRound />
-            ContentType id: {contentType._id}
-          </span>
-          <span class="text-sm">Created at: {contentType.createdAt}</span>
-        </div>
-        <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">Edit Content Type Properties:</a></h2>
-        <div class="p-2 w-full bg-gray-200 flex justify-center items-center">
-          <TextInput
-            id={`input_name_${contentType._id}`}
-            value={contentType.name}
-            type="text"
-            onchange={handleNameChange}
-          >ContentType name:
-          </TextInput>
-          <TextInput
-            id={`input_project_id_${contentType._id}`}
-            value={contentType.project_id}
-            type="text"
-            onchange={handleProjectIdChange}
-          >ContentType Project ID:
-          </TextInput>
-          <TextInput
-            id={`input_frontmatter_definition_${contentType._id}`}
-            value={contentType.frontmatter_definition}
-            type="text"
-            onchange={handleFrontmatterDefChange}
-          >ContentType Frontmatter matter:
-          </TextInput>
-          <TextInput
-            id={`input_description_${contentType._id}`}
-            value={contentType.description}
-            type="text"
-            onchange={handleDescChange}
-          >ContentType Description:
-          </TextInput>
-        </div>
-        {//
-        }
 
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-4">
-            <img class="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
-            <span class="font-medium dark:text-white">
-              Jese Leos
-            </span>
-          </div>
-          <Button
+            {showButtons?
+             (
+              <>
+            <Button
             className={`mt-2`}
             type="submit"
             onClick={async () => {
@@ -599,17 +539,18 @@ export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook
                 createdAt: created,
                 // __v: Math.floor(V.value*1),
               }*/
-              console.log("editedContentType: ", contentType)
+              console.log("editedContentType: ", pestoContentTypeContext.contentTypeContextEntity)
 
-              await setContentTypeHook(contentType);
+              //await setContentTypeHook(contentType);
               await setIsEditModeOnHook(false);
               await updateContentType({
-                _id: `${contentType._id}`,
-                name: contentType.name,
-                description: contentType.description,
-                project_id: contentType.project_id,
-                frontmatter_definition: contentType.frontmatter_definition,
-                createdAt: contentType.createdAt,
+                // ...PestoContentTypeContextEntityUtils.convertContextToApiEntity(pestoContentTypeContext.contentTypeContextEntity) // this one stil does not match the expeced type of [updateContentType]
+                _id: `${pestoContentTypeContext.contentTypeContextEntity._id}`,
+                name: pestoContentTypeContext.contentTypeContextEntity.name,
+                description: pestoContentTypeContext.contentTypeContextEntity.description,
+                project_id: pestoContentTypeContext.contentTypeContextEntity.project_id,
+                frontmatter_definition: PestoContentTypeContextEntityUtils.convertContextToApiEntity(pestoContentTypeContext.contentTypeContextEntity).frontmatter_definition,
+                createdAt: pestoContentTypeContext.contentTypeContextEntity.createdAt,
               })
 
               console.log(` # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- # --- `)
@@ -656,53 +597,90 @@ export function ContentTypeListCardEditModeOn({ contentType, setIsEditModeOnHook
 
 
           </Button>
+              
+              </>
+             ): (
+              <>
+              
+              </>
+             )
+            }
+
+
+          </form>
         </div>
-      </article>
-
-
-
-
-      <div>
-
-
-      </div>
+      </section>
     </>
   )
+
 }
-export function ContentTypeListCardEditModeOff(props: ContentTypeListCardProps): JSX.Element {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export function ContentTypeListCardEditModeOff({ showTitle = true }: ContentTypeListCardProps): JSX.Element {
+  const pestoContentTypeContext = useContext(PestoContentTypeContext)
+  if (!pestoContentTypeContext) {
+    throw new Error(`[ContentTypeListCard/ContentTypeListCardEditModeOff] - [pestoContentTypeContext] is null or undefined!`)
+  }
   return (
     <>
       <div class="text-left">
         <div class="px-4 sm:px-0">
-          <h3 class="text-base font-semibold leading-7 text-gray-900">Pesto ContentType Informations</h3>
+          {showTitle?(<h3 class="text-base font-semibold leading-7 text-gray-900">Pesto ContentType Informations</h3>):(<></>)}
           <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">ContentType details</p>
         </div>
         <div class="mt-6 border-t border-gray-100">
           <dl class="divide-y divide-gray-100">
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Id</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType._id}</dd>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{pestoContentTypeContext.contentTypeContextEntity._id}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Name</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.name}</dd>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{pestoContentTypeContext.contentTypeContextEntity.name}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Creation Date</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.createdAt}</dd>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{pestoContentTypeContext.contentTypeContextEntity.createdAt}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Description</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.description}</dd>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{pestoContentTypeContext.contentTypeContextEntity.description}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Project ID</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.project_id}</dd>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{pestoContentTypeContext.contentTypeContextEntity.project_id}</dd>
             </div>
-            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt class="text-sm font-medium leading-6 text-gray-900">ContentType Frontmatter</dt>
-              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{props.contentType.frontmatter_definition}</dd>
+            <hr/>
+            <div class="px-4 sm:px-0">
+              <h4 class="text-base font-semibold leading-7 text-gray-900">ContentType Frontmatter</h4>
             </div>
+            {
+              pestoContentTypeContext.contentTypeContextEntity.frontmatter_definition.map((fmEntry) =>{
+                return (
+                  <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <dt class="text-sm font-medium leading-6 text-gray-900">{fmEntry.name}</dt>
+                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{fmEntry.fmType}</dd>
+                  </div>
+                )
+              })
+            }
+
+            <hr/>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt class="text-sm font-medium leading-6 text-gray-900">Attachments</dt>
               <dd class="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
@@ -752,7 +730,7 @@ export function ContentTypeListCardEditModeOff(props: ContentTypeListCardProps):
  *  callback: FUNCTION  => (optional) parent javascript for buttons
  * @returns PROJECT-CARD + BUTTONS (optional)
  */
-export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Element {
+export function ContentTypeListCard({isEditModeOn: p_isEditModeOn = false, showButtons = true, showTitle = true, showGeneratedFields = true}: ContentTypeListCardProps): JSX.Element {
   //console.log(props)
 
 
@@ -760,24 +738,40 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
   //   console.log(` [PestoContentTypeUI] Appel USE EFFECT [dispatch(RequestContentTypeList())]`)
   //   dispatch(RequestContentTypeList())
   // }, [dispatch])
-  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(props.isEditModeOn || false);
-  const [contentType, setContentType] = useState<PestoContentTypeApiEntity>(props.contentType);
+  const [isEditModeOn, setIsEditModeOn] = useState<boolean>(p_isEditModeOn || false);
+  
+  // const [contentType, setContentType] = useState<PestoContentTypeApiEntity>(props.contentType);
+  const pestoContentTypeContext = useContext(PestoContentTypeContext)
+  if (!pestoContentTypeContext) {
+    throw new Error(`[ContentTypeListCard] - [pestoContentTypeContext] is null or undefined!`)
+  }
+  
   const [deleteContentType, {
+    data: deletedContentType,
     isError: didDeletionThrowError,
     isSuccess: hasSuccessfullyDeletedContentType,
     isLoading: isDeletingContentType,
   }] = useDeleteContentTypeMutation();
+
   return (
     <>
       {// READONLY MODE
       }
       <Card>
         {isEditModeOn && (
-          <ContentTypeListCardEditModeOn setContentTypeHook={setContentType} setIsEditModeOnHook={setIsEditModeOn} contentType={contentType} />
-        ) || (
-            <ContentTypeListCardEditModeOff contentType={contentType} />
-          )
+           /**
+            * <ContentTypeListCardEditModeOn setIsEditModeOnHook={setIsEditModeOn} />
+            */
+           <ContentTypeListCardEditModeOnRedesigned setIsEditModeOnHook={setIsEditModeOn} showButtons={showButtons} showTitle={showTitle} showGeneratedFields={showGeneratedFields} />
+         ) || (
+           <ContentTypeListCardEditModeOff />
+         )
         }
+
+
+            {showButtons?
+             (
+              <>
         <div class="grid grid-cols-2 gap-2 z-0 p-3">
           <Button
             onClick={async () => {
@@ -787,7 +781,7 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
           >
             Edit
           </Button>
-          <a href={`/content-type/${contentType._id}`}
+          <a href={`/content-type/${pestoContentTypeContext?.contentTypeContextEntity._id}`}
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             onClick={async () => {
               console.log(`Passage en mode Édition - Detail Page`)
@@ -800,7 +794,7 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
           <Button
             onClick={async () => {
               await deleteContentType({
-                _id: `${contentType._id}`
+                _id: `${pestoContentTypeContext?.contentTypeContextEntity._id}`
               })
               // await dispatch(DeleteContentTypeById(`${project._id}`))
             }}
@@ -808,7 +802,7 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
 
             Remove
             {isDeletingContentType && (
-              <Spinner aria-label="Deleting project..." />
+              <Spinner aria-label="Deleting Content Type..." />
             ) || (
                 <></>
               )}
@@ -820,12 +814,12 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
                   <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
                     <LuSuccessIcon className="h-5 w-5" />
                   </div>
-                  <div className="ml-3 text-sm font-normal">ContentType {contentType.name} successfully deleted.</div>
+                  <div className="ml-3 text-sm font-normal">ContentType {deletedContentType.name} successfully deleted.</div>
                   <Toast.Toggle />
                 </Toast>
                 <span>
                   {// 
-                    `${JSON.stringify(contentType, null, 4)}`
+                    `${JSON.stringify(deletedContentType, null, 4)}`
                   }
                 </span>
               </>
@@ -838,7 +832,7 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
                 <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
                   <LuErrorIcon className="h-5 w-5" />
                 </div>
-                <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${contentType.name}`} project:</div>
+                <div className="ml-3 text-sm font-normal">An error was encountered while trying to delete the {`${pestoContentTypeContext?.contentTypeContextEntity.name}`} content type:</div>
                 <div className="ml-3 text-sm font-normal">
                   <pre>
 
@@ -851,7 +845,7 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
               )}
           </Button>
 
-          <a href={`/project/${contentType._id}/content-mgmt`}
+          <a href={`/project/${pestoContentTypeContext?.contentTypeContextEntity._id}/content-mgmt`}
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             onClick={async () => {
               console.log(`Passage en mode Édition - Detail Page`)
@@ -861,7 +855,15 @@ export function ContentTypeListCard(props: ContentTypeListCardProps): JSX.Elemen
             ContentType's content management
 
           </a>
-        </div>
+        </div>              
+              </>
+             ):(
+              <>
+              
+              </>
+             )
+             }
+
       </Card>
     </>
   )

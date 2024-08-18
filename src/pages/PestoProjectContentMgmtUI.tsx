@@ -4,10 +4,14 @@
   } from "../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
   
   import { FunctionalComponent } from 'preact'
-  import { pestoApi } from "../app/api/endpoints/"
+  import { pestoApi, useContentTypeListQuery, useCreateNewContentTypeMutation } from "../app/api/endpoints/"
   import { Spinner } from "flowbite-react"
   // import { ContentTypeListCard } from "../components/ContentType/ContentTypeListCard"
   import { ProjectListCard } from "../components/Project/ProjectListCard"
+import { useEffect } from "preact/hooks"
+import { PestoContentTypeContextProvider } from "../components/ContentType/ContentTypeContext"
+import { ContentTypeListCard } from "../components/ContentType/ContentTypeListCard"
+import { PestoContentTypeApiEntity } from "../app/api/entities/PestoContentTypeApiEntity"
   const { useProjectDetailQuery } = pestoApi
   
   
@@ -35,7 +39,7 @@
      * Ok, so with the project ID, I need to fetch rom the database, all content-types that have that project ID
      */
     const defaultProjectDetails: PestoProjectApiEntity = {
-      _id: -1,
+      _id: `-1`,
       description: `bidon`,
       git_ssh_uri: `bidon`,
       name: `bidon`,
@@ -51,7 +55,32 @@
     } = useProjectDetailQuery({
       _id: `${project_id}`,
     });
+    const { 
+      data: pestoContentTypeListData = [], 
+      isLoading: isTryingToFetchContentTypesPending, 
+      isError: tryingToFetchContentTypesHasError,
+      isUninitialized: isTryingToFetchContentTypesUninitialized, 
+      isSuccess: hasSuccessfullyFetchedContentTypes
+    } = useContentTypeListQuery()
+
     
+    useEffect(() => {
+      /**
+       * Init: filter the list of content types
+       * no, not that. I think I might need to 
+       * add an endpoint in Pesto API to list
+       * - all content types of a given project
+       * - all contents of a given project. 
+       * - all contents if a given content type.
+       * a content has :
+       * > - One FK to the project, [project_id]
+       * > - One FK to the content type, [content_type_id]
+       * >  And one constraint: 
+       * >  The  [project_id] of the content-type
+       * >  must match the [project_id] of the content.
+       */
+
+    }, [])
     // const fetchedProject = await getProjectFromId(`${project_id}`);
   
     /* ----------------------- JSX ----------------------- */
@@ -87,6 +116,7 @@
                     <ProjectListCard
                       project={projectDetail?projectDetail:defaultProjectDetails}
                       isEditModeOn={false}
+                      isEditable={false}
                     />
                                 ):(
                   <span id="badge-dismiss-yellow" class="inline-flex items-center px-2 py-1 mr-2 text-sm font-medium text-yellow-800 bg-yellow-100 rounded dark:bg-yellow-900 dark:text-yellow-300">
@@ -102,6 +132,32 @@
                               }
   
         </div>
+
+        <hr style="margin:10px" />
+
+{/* ---------------------- FETCHING CONTENT TYPES NOTFICATIONS ------------------- */}
+
+
+{/* ---------------------- CONTENT TYPES LIST ------------------- */}
+<div className="content-types">
+  {pestoContentTypeListData &&
+    pestoContentTypeListData[0] &&
+    pestoContentTypeListData[0]._id !== 0 &&
+    pestoContentTypeListData.map((contentType: PestoContentTypeApiEntity, index: number) => {
+      console.log(`Inside PestoContentTypeList.tsx - pestoContentTypeListData.map( - contentType: [${contentType.name}]`)
+      return (
+        <PestoContentTypeContextProvider contentTypeApiEntity={contentType}>
+        <div>
+          <span>ContentType # {index}</span>
+          <ContentTypeListCard
+            isEditModeOn={false}
+          />
+        </div>
+        </PestoContentTypeContextProvider>
+      )
+    }
+    )}
+</div>
       </div>
     )
   }
