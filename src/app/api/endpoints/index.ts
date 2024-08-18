@@ -301,6 +301,8 @@ export const pestoApi = createApi({
         };
       },
     }),
+
+
     contentTypeList: build.query<PestoContentTypeApiEntity[], void>({
       query() {
         console.log(` RTK QUERY - I am the [contentTypeList]`);
@@ -315,6 +317,26 @@ export const pestoApi = createApi({
       // configuration for an individual endpoint, overriding the api setting
       keepUnusedDataFor: 0,
     }),
+
+    contentTypeListByProject: build.query<PestoContentTypeApiEntity[], { 
+      v_project_id: string
+    }>({
+      query({ 
+        v_project_id
+      }) {
+        console.log(` RTK QUERY - I am the [contentTypeListByProject] - requesting [/pesto-content-type/project/${v_project_id}]`);
+        return {
+          url: `pesto-content-type/project/${v_project_id}`,
+          params: {
+            limit: 10,
+          },
+          method: "GET",
+        };
+      },
+      // configuration for an individual endpoint, overriding the api setting
+      keepUnusedDataFor: 0,
+    }),
+
     /**
      * the detailed infos of a content type will consist of the project it belongs to.
      */
@@ -526,6 +548,7 @@ export const {
   useCreateNewContentTypeMutation,
   useUpdateContentTypeMutation,
   useContentTypeListQuery,
+  useContentTypeListByProjectQuery,
   useDeleteContentTypeMutation,
   useContentTypeDetailQuery,
   //  } = pestoContentTypeApi;

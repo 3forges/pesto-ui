@@ -4,7 +4,7 @@
   } from "../app/api/entities/PestoProjectApiEntity"/* from "../../features/PestoApi/Projects/pestoProjectSlice"*/
   
   import { FunctionalComponent } from 'preact'
-  import { pestoApi, useContentTypeListQuery, useCreateNewContentTypeMutation } from "../app/api/endpoints/"
+  import { pestoApi, useContentTypeListByProjectQuery, useContentTypeListQuery, useCreateNewContentTypeMutation } from "../app/api/endpoints/"
   import { Spinner } from "flowbite-react"
   // import { ContentTypeListCard } from "../components/ContentType/ContentTypeListCard"
   import { ProjectListCard } from "../components/Project/ProjectListCard"
@@ -61,7 +61,9 @@ import { PestoContentTypeApiEntity } from "../app/api/entities/PestoContentTypeA
       isError: tryingToFetchContentTypesHasError,
       isUninitialized: isTryingToFetchContentTypesUninitialized, 
       isSuccess: hasSuccessfullyFetchedContentTypes
-    } = useContentTypeListQuery()
+    } = useContentTypeListByProjectQuery({
+      v_project_id: `${project_id}`,
+    })
 
     
     useEffect(() => {
