@@ -11,7 +11,8 @@
     "build:vanilla:css": "bash -c 'pnpm dlx tailwindcss -i ./src/index.css -o ./dist/output.css'",
     "build": "pnpm run build:fixes && tsc && vite build",
     "build:web": "pnpm run build:fixes && tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "jbl": "bash -c 'pnpm dlx tailwindcss --version'"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
